@@ -6,6 +6,7 @@
 * Development Team:
   * [Bouchra Bennani](https://gaufre.informatique.univ-paris-diderot.fr/poca-b)
   * [Carl Christensen](https://gaufre.informatique.univ-paris-diderot.fr/poca-c)
+  * [Ismail El Majdoubi](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou)
 * SCRUM master: Diane Delaunay
 
 ## Types of gitlab issues
