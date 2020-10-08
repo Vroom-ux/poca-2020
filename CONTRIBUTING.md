@@ -11,7 +11,7 @@
   * [Lycia Fezzoua](https://gaufre.informatique.univ-paris-diderot.fr/fezzoua)
   * [Pascal Au](https://gaufre.informatique.univ-paris-diderot.fr/aup)
   * [Soufiane Rahoui](https://gaufre.informatique.univ-paris-diderot.fr/rahoui)
-  
+  * [Zitian Gao](https://gaufre.informatique.univ-paris-diderot.fr/gaoz)  
 * SCRUM master: Diane Delaunay
 
 ## Types of gitlab issues
