@@ -14,10 +14,11 @@ class Routes(users: Users) extends LazyLogging {
 
     def getHello() = {
         logger.info("I got a request to greet.")
-        HttpEntity(
-            ContentTypes.`text/html(UTF-8)`,
-            "<h1>Say hello to akka-http</h1>"
-        )
+        //HttpEntity(
+        //    ContentTypes.`text/html(UTF-8)`,
+        //    "<h1>Say hello to akka-http</h1>"
+        //)
+        html.hello()
     }
 
     def getSignup() = {
