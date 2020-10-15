@@ -18,7 +18,7 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
     override def createActorSystem(): akka.actor.ActorSystem =
         testKit.system.classicSystem
 
-    test("Route GET /hello should say hello") {
+    /*test("Route GET /hello should say hello") {
         var mockUsers = mock[Users]
         val routesUnderTest = new Routes(mockUsers).routes
 
@@ -30,7 +30,7 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
 
             entityAs[String] should ===("<h1>Say hello to akka-http</h1>")
         }
-    }
+    }*/
 
     test("Route GET /signup should returns the signup page") {
         var mockUsers = mock[Users]
