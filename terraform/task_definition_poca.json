@@ -1,7 +1,7 @@
 [
     {
         "name": "poca-webserver",
-        "image": "poca/poca-2020:latest${IMAGE_DIGEST}",
+        "image": "ismaj/poca:poca-2020${IMAGE_DIGEST}",
         "memoryReservation": 950,
         "portMappings": [
             {
@@ -27,7 +27,7 @@
         }],
         "secrets": [{
             "name": "DB_PASSWORD",
-            "valueFrom": "arn:aws:ssm:eu-west-3:182500928202:parameter/database/password"
+            "valueFrom": "arn:aws:ssm:eu-west-3:354539818634:parameter/database/password"
         }]
     }
 ]
