@@ -26,11 +26,6 @@ class Routes(users: Users) extends LazyLogging {
         html.signup()
     }
 
-    def getSignin() = {
-        logger.info("I got a request for sign-in.")
-        html.signin()
-    }
-
     def register(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request to register.")
 
@@ -75,17 +70,12 @@ class Routes(users: Users) extends LazyLogging {
         concat(
             path("hello") {
                 get {
-                    complete(getHello())
+                    complete(getHello)
                 }
             },
             path("signup") {
                 get {
-                    complete(getSignup())
-                }
-            },
-            path(pm="signin") {
-                get {
-                    complete(getSignin())
+                    complete(getSignup)
                 }
             },
             path("register") {
@@ -95,7 +85,7 @@ class Routes(users: Users) extends LazyLogging {
             },
             path("users") {
                 get {
-                    complete(getUsers())
+                    complete(getUsers)
                 }
             }
         )
