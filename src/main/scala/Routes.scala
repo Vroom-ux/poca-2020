@@ -26,6 +26,57 @@ class Routes(users: Users) extends LazyLogging {
         html.signup()
     }
 
+    def getSignin() = {
+        logger.info("I got a request for signin.")
+        html.signin()
+    }
+
+    def isEmpty(x: String) = { x == null || x.trim.isEmpty}
+
+    def login(fields: Map[String, String]): Future[HttpResponse] = {
+        logger.info("I got a request for login.")
+        
+        fields.get("username") match {
+            case Some(username) => {
+                if(isEmpty(username)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'username' not found.",
+                        )
+                    )
+                } else {
+                    val userSigninFuture: Future[Option[User]] = users.getUserByUsername(username=username)
+                    userSigninFuture.flatMap(userSignin => {
+                        if(userSignin.isEmpty){
+                            Future(
+                                HttpResponse(
+                                    StatusCodes.OK,
+                                    entity=s"The user '$username' doesn't exist",
+                                )
+                            )
+                        } else {
+                            Future(
+                                HttpResponse(
+                                    StatusCodes.OK,
+                                    entity=s"Welcome back '$username'",
+                                )
+                            )
+                        }
+                    })
+                }
+            }
+            case None => {
+                Future(
+                    HttpResponse(
+                        StatusCodes.BadRequest,
+                        entity="Field 'username' not found."
+                    )
+                )
+            }
+        }
+    }    
+
     def register(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request to register.")
 
@@ -86,6 +137,16 @@ class Routes(users: Users) extends LazyLogging {
             path("users") {
                 get {
                     complete(getUsers)
+                }
+            },
+            path("login") {
+                (post & formFieldMap) { fields =>
+                    complete(login(fields))
+                }
+            },
+            path("signin") {
+                get {
+                    complete(getSignin)
                 }
             }
         )
