@@ -1,2 +1,1 @@
-
-elastic_ip_allocation_id = "eipalloc-04a3cdde608032d36"
+elastic_ip_allocation_id = "eipalloc-0e44f00ab314255e6"
