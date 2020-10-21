@@ -1,16 +1,27 @@
 @()
 
 <!doctype html>
-<html>
-    <head></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amazoon</title>
+</head>
 
-    <h1>Signup</h1>
+    <h1>Sign-up</h1>
 
-    <p>Here you can signup to our marvelous web application.</p>
+    <p>Here you can sign-up to our marvelous web application.</p>
 
     <form action=/register method="post">
-        <label for="username">username:</label><br>
-        <input type="text" name="username"></input><br>
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" required><br>
+        <label for="password">Password</label><br>
+        <input type="password" name = "password"><br>
+        <label for="email">Email : </label><br>
+        <input type="email" name="email"><br>
+        <label for="date of birth">Date of birth</label><br>
+        <input type="date" name="dateb"><br>
         <input type="submit">
     </form>
+
+    <p>Already have an account? <a href="signin">Sign-in</a></p>
 </html>
