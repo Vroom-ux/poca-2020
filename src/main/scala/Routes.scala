@@ -80,9 +80,9 @@ class Routes(users: Users) extends LazyLogging {
     def register(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request to register.")
 
-        fields.get("username") match {
-            case Some(username) => {
-                val userCreation: Future[Unit] = users.createUser(username=username)
+        (fields.get("username"),fields.get("password"),fields.get("email")) match {
+            case (Some(username),Some(password),Some(mail)) => {
+                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
 
                 userCreation.map(_ => {
                     HttpResponse(
@@ -98,7 +98,7 @@ class Routes(users: Users) extends LazyLogging {
                     }
                 })
             }
-            case None => {
+            case _ => {
                 Future(
                     HttpResponse(
                         StatusCodes.BadRequest,

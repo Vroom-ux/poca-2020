@@ -41,21 +41,19 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
             status should ===(StatusCodes.OK)
 
             contentType should ===(ContentTypes.`text/html(UTF-8)`)
-
-            //entityAs[String].length should be(330)
         }
     }
 
     test("Route POST /register should create a new user") {
         var mockUsers = mock[Users]
-        (mockUsers.createUser _).expects("toto").returning(Future(())).once()
+        (mockUsers.createUser _).expects("toto","ptoto","toto@mail.com").returning(Future(())).once()
 
         val routesUnderTest = new Routes(mockUsers).routes
 
         val request = HttpRequest(
             method = HttpMethods.POST,
             uri = "/register",
-            entity = FormData(("username", "toto")).toEntity
+            entity = FormData(("username", "toto"),("password","ptoto"),("email","toto@mail.com")).toEntity
         )
         request ~> routesUnderTest ~> check {
             status should ===(StatusCodes.OK)
@@ -68,7 +66,7 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
 
     test("Route POST /register should warn the user when username is already taken") {
         var mockUsers = mock[Users]
-        (mockUsers.createUser _).expects("toto").returns(Future({
+        (mockUsers.createUser _).expects("toto","ptoto","toto@mail.com").returns(Future({
             throw new UserAlreadyExistsException("")
         })).once()
 
@@ -77,7 +75,7 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
         val request = HttpRequest(
             method = HttpMethods.POST,
             uri = "/register",
-            entity = FormData(("username", "toto")).toEntity
+            entity = FormData(("username", "toto"),("password","ptoto"),("email","toto@mail.com")).toEntity
         )
         request ~> routesUnderTest ~> check {
             status should ===(StatusCodes.OK)
@@ -91,9 +89,9 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
     test("Route GET /users should display the list of users") {
         var mockUsers = mock[Users]
         val userList = List(
-            User(username="riri", userId="id1"),
-            User(username="fifi", userId="id2"),
-            User(username="lulu", userId="id2")
+            User(username="riri", userId="id1",password = "priri", mail = "toto@mail.com"),
+            User(username="fifi", userId="id2",password = "pfifi",mail = "fifi@maiil.com"),
+            User(username="lulu", userId="id2",password="",mail="")
         )
         (mockUsers.getAllUsers _).expects().returns(Future(userList)).once()
 
@@ -104,8 +102,6 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
             status should ===(StatusCodes.OK)
 
             contentType should ===(ContentTypes.`text/html(UTF-8)`)
-
-           // entityAs[String].length should be(203)
         }
     }
 }
