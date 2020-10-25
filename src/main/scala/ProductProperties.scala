@@ -24,7 +24,7 @@ class ProductProperties {
 
     def dimension = column[String]("dimension")
 
-    def * : ProvenShape[(Float,String,String)] = (price, matter, dimension)
+    def * = (price, matter, dimension)
   }
 
 }
