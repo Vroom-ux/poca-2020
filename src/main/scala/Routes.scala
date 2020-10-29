@@ -36,13 +36,20 @@ class Routes(users: Users) extends LazyLogging {
     def login(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request for login.")
         
-        fields.get("username") match {
-            case Some(username) => {
+        (fields.get("username"),fields.get("password")) match {
+            case (Some(username),Some(password)) => {
                 if(isEmpty(username)){
                     Future(
                         HttpResponse(
                             StatusCodes.OK,
                             entity=s"Field 'username' not found.",
+                        )
+                    )
+                }else if(isEmpty(password)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'password' not found.",
                         )
                     )
                 } else {
@@ -52,25 +59,35 @@ class Routes(users: Users) extends LazyLogging {
                             Future(
                                 HttpResponse(
                                     StatusCodes.OK,
-                                    entity=s"The user '$username' doesn't exist",
+                                    entity=s"Wrong 'username' or password",
                                 )
                             )
                         } else {
-                            Future(
-                                HttpResponse(
-                                    StatusCodes.OK,
-                                    entity=s"Welcome back '$username'",
+                            val User(uid,uname,upass,umail)=userSignin.getOrElse(Nil)
+                            if(upass==password){
+                                Future(
+                                    HttpResponse(
+                                        StatusCodes.OK,
+                                        entity=s"Welcome back '$username' your password is '$password', your id is '$uid' and your mail is '$umail'",
+                                    )
                                 )
-                            )
+                            } else {
+                                Future(
+                                    HttpResponse(
+                                        StatusCodes.OK,
+                                        entity=s"Wrong username or 'password'",
+                                    )
+                                )
+                            }
                         }
                     })
                 }
             }
-            case None => {
+            case _ => {
                 Future(
                     HttpResponse(
                         StatusCodes.BadRequest,
-                        entity="Field 'username' not found."
+                        entity="Field 'username' or 'password' not found."
                     )
                 )
             }
