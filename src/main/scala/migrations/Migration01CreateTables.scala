@@ -16,6 +16,12 @@ class Migration01CreateTables(db: Database) extends Migration with LazyLogging {
         def * = (userId, username,password,mail)
     }
 
+    class CurrentProductsTable(tag: Tag) extends Table[(String, String)](tag, "products") {
+        def productId = column[String]("productId", O.PrimaryKey)
+        def productname = column[String]("productname")
+        def * = (productId, productname)
+    }
+
     override def apply(): Unit = {
         implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
         val users = TableQuery[CurrentUsersTable]
@@ -23,5 +29,11 @@ class Migration01CreateTables(db: Database) extends Migration with LazyLogging {
         val creationFuture: Future[Unit] = db.run(dbio)
         Await.result(creationFuture, Duration.Inf)
         logger.info("Done creating table Users")
+
+        val products = TableQuery[CurrentProductsTable]
+        val dbio2: DBIO[Unit] = products.schema.create
+        val creationFuture2: Future[Unit] = db.run(dbio2)
+        Await.result(creationFuture2, Duration.Inf)
+        logger.info("Done creating table Products")
     }
 }
