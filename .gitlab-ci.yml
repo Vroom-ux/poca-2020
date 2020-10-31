@@ -77,3 +77,4 @@ deploy:
   only:
     refs:
       - master
+      - dev
