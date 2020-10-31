@@ -54,6 +54,7 @@ build-dockerimage:
   only:
     refs:
       - master
+      - dev
   artifacts:
     paths:
       - image-digest/content
