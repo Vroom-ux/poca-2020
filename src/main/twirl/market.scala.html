@@ -1,0 +1,18 @@
+@(products: Seq[poca.Product])
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amazoon</title>
+</head>
+
+<h1>Here is the list of our products.</h1>
+
+<ul>
+    @for(product <- products) {
+    <li>@product.productname</li>
+    }
+</ul>
+
+</html>
