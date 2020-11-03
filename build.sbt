@@ -1,4 +1,3 @@
-
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(DockerPlugin)
@@ -25,7 +24,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
   "org.postgresql" % "postgresql" % "42.2.16",
   "com.typesafe" % "config" % "1.4.0",
-  "org.mindrot" % "jbcrypt" % "0.3m"
+  "org.mindrot" % "jbcrypt" % "0.3m",
 )
 
 dockerExposedPorts ++= Seq(8080)
