@@ -7,6 +7,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, ContentTypes, StatusCodes}
 import com.typesafe.scalalogging.LazyLogging
 import TwirlMarshaller._
+import org.mindrot.jbcrypt.BCrypt
 
 
 class Routes(users: Users) extends LazyLogging {
@@ -63,8 +64,9 @@ class Routes(users: Users) extends LazyLogging {
                                 )
                             )
                         } else {
+                            val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
                             val User(uid,uname,upass,umail)=userSignin.getOrElse(Nil)
-                            if(upass==password){
+                            if(BCrypt.checkpw(upass,protectpassword)){
                                 Future(
                                     HttpResponse(
                                         StatusCodes.OK,
@@ -99,7 +101,8 @@ class Routes(users: Users) extends LazyLogging {
 
         (fields.get("username"),fields.get("password"),fields.get("email")) match {
             case (Some(username),Some(password),Some(mail)) => {
-                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
+                val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
+                val userCreation: Future[Unit] = users.createUser(username=username,password = protectpassword,mail = mail)
 
                 userCreation.map(_ => {
                     HttpResponse(
