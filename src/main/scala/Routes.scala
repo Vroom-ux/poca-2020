@@ -64,9 +64,8 @@ class Routes(users: Users) extends LazyLogging {
                                 )
                             )
                         } else {
-                            val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
                             val User(uid,uname,upass,umail)=userSignin.getOrElse(Nil)
-                            if(BCrypt.checkpw(upass,protectpassword)){
+                            if(BCrypt.checkpw(password,upass)){
                                 Future(
                                     HttpResponse(
                                         StatusCodes.OK,
