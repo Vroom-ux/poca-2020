@@ -7,11 +7,13 @@ import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.PostgresProfile.api._
 
 
-class Migration01CreateTables(db: Database) extends Migration with LazyLogging {
-    class CurrentUsersTable(tag: Tag) extends Table[(String, String)](tag, "users") {
+class Migration01CreateUsersTable(db: Database) extends Migration with LazyLogging {
+    class CurrentUsersTable(tag: Tag) extends Table[(String, String,String,String)](tag, "users") {
         def userId = column[String]("userId", O.PrimaryKey)
         def username = column[String]("username")
-        def * = (userId, username)
+        def password = column[String]("password")
+        def mail = column[String]("mail")
+        def * = (userId, username,password,mail)
     }
 
     override def apply(): Unit = {

@@ -15,7 +15,8 @@ class RunMigrations(db: Database) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
     val migrationList: List[Migration] = List(
         new Migration00AddVersionNumber(db),
-        new Migration01CreateTables(db),
+        new Migration01CreateUsersTable(db),
+        new Migration02CreateProductsTable(db),
     )
 
     def getCurrentDatabaseVersion(): Int = {

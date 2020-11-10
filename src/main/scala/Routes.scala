@@ -7,9 +7,10 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, ContentTypes, StatusCodes}
 import com.typesafe.scalalogging.LazyLogging
 import TwirlMarshaller._
+import org.mindrot.jbcrypt.BCrypt
 
 
-class Routes(users: Users) extends LazyLogging {
+class Routes(users: Users, products : Products) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     def getHello() = {
@@ -26,12 +27,80 @@ class Routes(users: Users) extends LazyLogging {
         html.signup()
     }
 
+    def getSignin() = {
+        logger.info("I got a request for signin.")
+        html.signin()
+    }
+
+    def isEmpty(x: String) = { x == null || x.trim.isEmpty}
+
+    def login(fields: Map[String, String]): Future[HttpResponse] = {
+        logger.info("I got a request for login.")
+        
+        (fields.get("username"),fields.get("password")) match {
+            case (Some(username),Some(password)) => {
+                if(isEmpty(username)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'username' not found.",
+                        )
+                    )
+                }else if(isEmpty(password)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'password' not found.",
+                        )
+                    )
+                } else {
+                    val userSigninFuture: Future[Option[User]] = users.getUserByUsername(username=username)
+                    userSigninFuture.flatMap(userSignin => {
+                        if(userSignin.isEmpty){
+                            Future(
+                                HttpResponse(
+                                    StatusCodes.OK,
+                                    entity=s"Wrong 'username' or password",
+                                )
+                            )
+                        } else {
+                            val User(uid,uname,upass,umail)=userSignin.getOrElse(Nil)
+                            if(BCrypt.checkpw(password,upass)){
+                                Future(
+                                    HttpResponse(
+                                        StatusCodes.OK,
+                                        entity=s"Welcome back '$username' your password is '$password', your id is '$uid' and your mail is '$umail'",
+                                    )
+                                )
+                            } else {
+                                Future(
+                                    HttpResponse(
+                                        StatusCodes.OK,
+                                        entity=s"Wrong username or 'password'",
+                                    )
+                                )
+                            }
+                        }
+                    })
+                }
+            }
+            case _ => {
+                Future(
+                    HttpResponse(
+                        StatusCodes.BadRequest,
+                        entity="Field 'username' or 'password' not found."
+                    )
+                )
+            }
+        }
+    }    
+
     def register(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request to register.")
 
-        fields.get("username") match {
-            case Some(username) => {
-                val userCreation: Future[Unit] = users.createUser(username=username)
+        (fields.get("username"),fields.get("password"),fields.get("email")) match {
+            case (Some(username),Some(password),Some(mail)) => {
+                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
 
                 userCreation.map(_ => {
                     HttpResponse(
@@ -47,7 +116,7 @@ class Routes(users: Users) extends LazyLogging {
                     }
                 })
             }
-            case None => {
+            case _ => {
                 Future(
                     HttpResponse(
                         StatusCodes.BadRequest,
@@ -66,6 +135,13 @@ class Routes(users: Users) extends LazyLogging {
         userSeqFuture.map(userSeq => html.users(userSeq))
     }
 
+    def getMarket() = {
+        logger.info("I got a request to get product list.")
+
+        val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+
+        productSeqfuture.map(productSeq => html.market(productSeq))
+    }
     val routes: Route = 
         concat(
             path("hello") {
@@ -86,6 +162,21 @@ class Routes(users: Users) extends LazyLogging {
             path("users") {
                 get {
                     complete(getUsers)
+                }
+            },
+            path("login") {
+                (post & formFieldMap) { fields =>
+                    complete(login(fields))
+                }
+            },
+            path("signin") {
+                get {
+                    complete(getSignin)
+                }
+            },
+            path("market"){
+                get {
+                    complete(getMarket)
                 }
             }
         )

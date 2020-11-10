@@ -40,7 +40,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Users.createUser should create a new user") {
         val users: Users = new Users()
 
-        val createUserFuture: Future[Unit] = users.createUser("toto")
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
         // Check that the future succeeds
@@ -56,10 +56,10 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Users.createUser returned future should fail if the user already exists") {
         val users: Users = new Users()
 
-        val createUserFuture: Future[Unit] = users.createUser("toto")
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
-        val createDuplicateUserFuture: Future[Unit] = users.createUser("toto")
+        val createDuplicateUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createDuplicateUserFuture, Duration.Inf)
 
         createDuplicateUserFuture.value match {
@@ -73,7 +73,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Users.getUserByUsername should return no user if it does not exist") {
         val users: Users = new Users()
 
-        val createUserFuture: Future[Unit] = users.createUser("toto")
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
         val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("somebody-else")
@@ -85,7 +85,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Users.getUserByUsername should return a user") {
         val users: Users = new Users()
 
-        val createUserFuture: Future[Unit] = users.createUser("toto")
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
         val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
@@ -100,10 +100,10 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Users.getAllUsers should return a list of users") {
         val users: Users = new Users()
 
-        val createUserFuture: Future[Unit] = users.createUser("riri")
+        val createUserFuture: Future[Unit] = users.createUser("riri","priri","riri@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
-        val createAnotherUserFuture: Future[Unit] = users.createUser("fifi")
+        val createAnotherUserFuture: Future[Unit] = users.createUser("fifi","pfifi","fifi@mail.com")
         Await.ready(createAnotherUserFuture, Duration.Inf)
 
         val returnedUserSeqFuture: Future[Seq[User]] = users.getAllUsers()

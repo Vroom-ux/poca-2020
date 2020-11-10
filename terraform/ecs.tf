@@ -131,7 +131,7 @@ resource "aws_iam_policy" "access_db_password" {
         ],
         "Effect": "Allow",
         "Resource": [
-                "arn:aws:ssm:eu-west-3:182500928202:parameter/database/password"     
+                "arn:aws:ssm:eu-west-3:354539818634:parameter/database/password"     
             ]
         }
     ]

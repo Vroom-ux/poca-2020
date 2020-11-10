@@ -4,8 +4,8 @@ The AWS user used by terraform is granted the AWS managed policy AdministratorAc
 
 terraform {
   backend "s3" {
-    bucket = "poca-tfstates"
-    key = "poca-2020"
+    bucket = "poca-bucket"
+    key = "poca/poca-2020"
     region = "eu-west-3"
     dynamodb_table = "poca-tfstates-locks"
   }
