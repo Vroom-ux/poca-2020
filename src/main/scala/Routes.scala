@@ -100,8 +100,7 @@ class Routes(users: Users) extends LazyLogging {
 
         (fields.get("username"),fields.get("password"),fields.get("email")) match {
             case (Some(username),Some(password),Some(mail)) => {
-                val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
-                val userCreation: Future[Unit] = users.createUser(username=username,password = protectpassword,mail = mail)
+                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
 
                 userCreation.map(_ => {
                     HttpResponse(
