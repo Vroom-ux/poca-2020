@@ -10,7 +10,7 @@ import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 
 
-class Routes(users: Users) extends LazyLogging {
+class Routes(users: Users, products : Products) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     def getHello() = {
@@ -100,8 +100,7 @@ class Routes(users: Users) extends LazyLogging {
 
         (fields.get("username"),fields.get("password"),fields.get("email")) match {
             case (Some(username),Some(password),Some(mail)) => {
-                val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
-                val userCreation: Future[Unit] = users.createUser(username=username,password = protectpassword,mail = mail)
+                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
 
                 userCreation.map(_ => {
                     HttpResponse(
@@ -136,6 +135,13 @@ class Routes(users: Users) extends LazyLogging {
         userSeqFuture.map(userSeq => html.users(userSeq))
     }
 
+    def getMarket() = {
+        logger.info("I got a request to get product list.")
+
+        val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+
+        productSeqfuture.map(productSeq => html.market(productSeq))
+    }
     val routes: Route = 
         concat(
             path("hello") {
@@ -166,6 +172,11 @@ class Routes(users: Users) extends LazyLogging {
             path("signin") {
                 get {
                     complete(getSignin)
+                }
+            },
+            path("market"){
+                get {
+                    complete(getMarket)
                 }
             }
         )

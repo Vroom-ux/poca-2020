@@ -4,6 +4,7 @@ package poca
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import java.util.UUID
+import org.mindrot.jbcrypt.BCrypt
 
 case class User(userId: String, username: String, password : String, mail: String)
 
@@ -32,7 +33,8 @@ class Users {
         existingUsersFuture.flatMap(existingUsers => {
             if (existingUsers.isEmpty) {
                 val userId = UUID.randomUUID.toString()
-                val newUser = User(userId=userId, username=username, password = password,mail = mail)
+                val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
+                val newUser = User(userId=userId, username=username, password = protectpassword,mail = mail)
                 val newUserAsTuple: (String, String,String,String) = User.unapply(newUser).get
 
                 val dbio: DBIO[Int] = users += newUserAsTuple
