@@ -10,7 +10,7 @@ import com.typesafe.scalalogging.LazyLogging
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import ch.qos.logback.classic.{Level, Logger}
 import org.slf4j.LoggerFactory
-import poca.{MyDatabase, Users, User, UserAlreadyExistsException, Routes, RunMigrations}
+import poca.{MyDatabase, Users, User, UserAlreadyExistsException, Products, Product, ProductAlreadyExistsException, Routes, RunMigrations}
 
 
 class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with LazyLogging {
@@ -110,5 +110,83 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         val returnedUserSeq: Seq[User] = Await.result(returnedUserSeqFuture, Duration.Inf)
 
         returnedUserSeq.length should be(2)
+    }
+
+
+    // Products
+
+    test("Products.createProduct should create a new user") {
+        val products: Products = new Products()
+
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createProductFuture, Duration.Inf)
+
+        // Check that the future succeeds
+        createProductFuture.value should be(Some(Success(())))
+
+        val getProductsFuture: Future[Seq[Product]] = products.getAllProducts()
+        var allProducts: Seq[Product] = Await.result(getProductsFuture, Duration.Inf)
+
+        allProducts.length should be(1)
+        allProducts.head.productname should be("bestProduct")
+    }
+
+    test("Products.createProduct returned future should fail if the product already exists") {
+        val products: Products = new Products()
+
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createProductFuture, Duration.Inf)
+
+        val createDuplicateProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createDuplicateProductFuture, Duration.Inf)
+
+        createDuplicateProductFuture.value match {
+            case Some(Failure(exc: ProductAlreadyExistsException)) => {
+                exc.getMessage should equal ("A product with productname 'bestProduct' already exists.")
+            }
+            case _ => fail("The future should fail.")
+        }
+    }
+
+    test("Products.getProductByProductname should return no product if it does not exist") {
+        val products: Products = new Products()
+
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createProductFuture, Duration.Inf)
+
+        val returnedProductFuture: Future[Option[Product]] = products.getProductByProductname("other-product")
+        val returnedProduct: Option[Product] = Await.result(returnedProductFuture, Duration.Inf)
+
+        returnedProduct should be(None)
+    }
+
+    test("Products.getProductByProductname should return a product") {
+        val products: Products = new Products()
+
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createProductFuture, Duration.Inf)
+
+        val returnedProductFuture: Future[Option[Product]] = products.getProductByProductname("bestProduct")
+        val returnedProduct: Option[Product] = Await.result(returnedProductFuture, Duration.Inf)
+
+        returnedProduct match {
+            case Some(product) => product.productname should be("bestProduct")
+            case None => fail("Should return a product.")
+        }
+    }
+
+    test("Products.getAllProducts should return a list of products") {
+        val products: Products = new Products()
+
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        Await.ready(createProductFuture, Duration.Inf)
+
+        val createAnotherProductFuture: Future[Unit] = products.createProduct("bestProduct2")
+        Await.ready(createAnotherProductFuture, Duration.Inf)
+
+        val returnedProductSeqFuture: Future[Seq[Product]] = products.getAllProducts()
+        val returnedProductSeq: Seq[Product] = Await.result(returnedProductSeqFuture, Duration.Inf)
+
+        returnedProductSeq.length should be(2)
     }
 }
