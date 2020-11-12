@@ -1,4 +1,3 @@
-
 package poca
 
 import scala.concurrent.Future
@@ -179,7 +178,7 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                         case exc: ProductAlreadyExistsException => {
                             HttpResponse(
                                 StatusCodes.OK,
-                                entity=s"The product '$productname' is already exists",
+                                entity=s"The product '$productname' already exists",
                             )
                         }
                     })
