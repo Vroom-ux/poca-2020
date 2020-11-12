@@ -100,21 +100,44 @@ class Routes(users: Users, products : Products) extends LazyLogging {
 
         (fields.get("username"),fields.get("password"),fields.get("email")) match {
             case (Some(username),Some(password),Some(mail)) => {
-                val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
-
-                userCreation.map(_ => {
-                    HttpResponse(
-                        StatusCodes.OK,
-                        entity=s"Welcome '$username'! You've just been registered to our great marketplace.",
-                    )
-                }).recover({
-                    case exc: UserAlreadyExistsException => {
+                if(isEmpty(username)){
+                    Future(
                         HttpResponse(
                             StatusCodes.OK,
-                            entity=s"The username '$username' is already taken. Please choose another username.",
+                            entity=s"Field 'username' not found.",
                         )
-                    }
-                })
+                    )
+                }else if(isEmpty(password)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'password' not found.",
+                        )
+                    )
+                }else if(isEmpty(mail)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'mail' not found.",
+                        )
+                    )
+                }else{
+                    val userCreation: Future[Unit] = users.createUser(username=username,password = password,mail = mail)
+
+                    userCreation.map(_ => {
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Welcome '$username'! You've just been registered to our great marketplace.",
+                        )
+                    }).recover({
+                        case exc: UserAlreadyExistsException => {
+                            HttpResponse(
+                                StatusCodes.OK,
+                                entity=s"The username '$username' is already taken. Please choose another username.",
+                            )
+                        }
+                    })
+                } 
             }
             case _ => {
                 Future(
