@@ -27,6 +27,11 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         html.signup()
     }
 
+    def getaddProductTest() = {
+        logger.info("I got a request for addProductTest.")
+        html.addProductTest()
+    }
+
     def getSignin() = {
         logger.info("I got a request for signin.")
         html.signin()
@@ -143,7 +148,48 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                 Future(
                     HttpResponse(
                         StatusCodes.BadRequest,
-                        entity="Field 'username' not found."
+                        entity="Field 'username', 'password' or 'mail' not found."
+                    )
+                )
+            }
+        }
+    }
+
+    def addProduct(fields: Map[String, String]): Future[HttpResponse] = {
+        logger.info("I got a request to add product.")
+
+        fields.get("productname") match {
+            case Some(productname) => {
+                if(isEmpty(productname)){
+                    Future(
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"Field 'Product name' not found.",
+                        )
+                    )
+                }else{
+                    val productCreation: Future[Unit] = products.createProduct(productname=productname)
+
+                    productCreation.map(_ => {
+                        HttpResponse(
+                            StatusCodes.OK,
+                            entity=s"added product '$productname'!",
+                        )
+                    }).recover({
+                        case exc: ProductAlreadyExistsException => {
+                            HttpResponse(
+                                StatusCodes.OK,
+                                entity=s"The product '$productname' is already exists",
+                            )
+                        }
+                    })
+                } 
+            }
+            case _ => {
+                Future(
+                    HttpResponse(
+                        StatusCodes.BadRequest,
+                        entity="Field 'Product name' not found."
                     )
                 )
             }
@@ -200,6 +246,16 @@ class Routes(users: Users, products : Products) extends LazyLogging {
             path("market"){
                 get {
                     complete(getMarket)
+                }
+            },
+            path("addProduct"){
+                (post & formFieldMap) { fields =>
+                    complete(addProduct(fields))
+                }
+            },
+            path("addProductTest") {
+                get {
+                    complete(getaddProductTest)
                 }
             }
         )
