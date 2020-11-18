@@ -73,8 +73,8 @@ deploy:
     - cd ../terraform
     - export TF_IN_AUTOMATION=1
     - export TF_VAR_image_digest="@`cat ../image-digest/content`"
-    - export TF_VAR_db_password= $db_password
-    - export db_password= $db_password
+    - export TF_VAR_db_password=$db_password
+    - export db_password=$db_password
     - terraform init -input=false -lock=false
     - terraform apply -input=false -auto-approve --var-file=integration.tfvars -lock=false
   only:
