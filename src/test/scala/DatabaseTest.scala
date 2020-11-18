@@ -115,10 +115,10 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
 
     // Products
 
-    test("Products.createProduct should create a new user") {
+    test("Products.createProduct should create a new product") {
         val products: Products = new Products()
 
-        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test")
         Await.ready(createProductFuture, Duration.Inf)
 
         // Check that the future succeeds
@@ -131,27 +131,11 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         allProducts.head.productname should be("bestProduct")
     }
 
-    test("Products.createProduct returned future should fail if the product already exists") {
-        val products: Products = new Products()
-
-        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
-        Await.ready(createProductFuture, Duration.Inf)
-
-        val createDuplicateProductFuture: Future[Unit] = products.createProduct("bestProduct")
-        Await.ready(createDuplicateProductFuture, Duration.Inf)
-
-        createDuplicateProductFuture.value match {
-            case Some(Failure(exc: ProductAlreadyExistsException)) => {
-                exc.getMessage should equal ("A product with productname 'bestProduct' already exists.")
-            }
-            case _ => fail("The future should fail.")
-        }
-    }
 
     test("Products.getProductByProductname should return no product if it does not exist") {
         val products: Products = new Products()
 
-        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test")
         Await.ready(createProductFuture, Duration.Inf)
 
         val returnedProductFuture: Future[Option[Product]] = products.getProductByProductname("other-product")
@@ -163,7 +147,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Products.getProductByProductname should return a product") {
         val products: Products = new Products()
 
-        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test")
         Await.ready(createProductFuture, Duration.Inf)
 
         val returnedProductFuture: Future[Option[Product]] = products.getProductByProductname("bestProduct")
@@ -178,10 +162,10 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
     test("Products.getAllProducts should return a list of products") {
         val products: Products = new Products()
 
-        val createProductFuture: Future[Unit] = products.createProduct("bestProduct")
+        val createProductFuture: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test")
         Await.ready(createProductFuture, Duration.Inf)
 
-        val createAnotherProductFuture: Future[Unit] = products.createProduct("bestProduct2")
+        val createAnotherProductFuture: Future[Unit] = products.createProduct("bestProduct2","bestproduct2",BigDecimal("0.00"),"test")
         Await.ready(createAnotherProductFuture, Duration.Inf)
 
         val returnedProductSeqFuture: Future[Seq[Product]] = products.getAllProducts()

@@ -4,7 +4,7 @@ import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import java.util.UUID
 
-case class Product(productId: String, productname: String)
+case class Product(productId: String, productname: String, productdescription : String, productprice : BigDecimal, productcategory : String)
 
 final case class ProductAlreadyExistsException(private val message: String="", private val cause: Throwable=None.orNull)
   extends Exception(message, cause)
@@ -12,26 +12,32 @@ final case class ProductAlreadyExistsException(private val message: String="", p
 
 class Products {
 
-  class ProductsTable(tag: Tag) extends Table[(String, String)](tag, "products") {
+  class ProductsTable(tag: Tag) extends Table[(String, String,String,BigDecimal,String)](tag, "products") {
     def productId = column[String]("productId", O.PrimaryKey)
 
     def productname = column[String]("productname")
 
-    def * = (productId, productname)
+    def productdescription = column[String]("productdescription")
+
+    def productprice = column[BigDecimal]("productprice")
+
+    def productcategory = column[String]("productcategory")
+
+    def * = (productId, productname,productdescription,productprice,productcategory)
   }
 
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
     val db = MyDatabase.db
     val products = TableQuery[ProductsTable]
 
-    def createProduct(productname: String): Future[Unit] = {
+    def createProduct(productname: String,productdescription :String, productprice :BigDecimal,productcategory : String): Future[Unit] = {
         val existingProductsFuture = getProductByProductname(productname)
 
         existingProductsFuture .flatMap(existingProducts => {
             if (existingProducts.isEmpty) {
                 val productId = UUID.randomUUID.toString()
-                val newProduct = Product(productId=productId, productname=productname)
-                val newProductAsTuple: (String, String) = Product.unapply(newProduct).get
+                val newProduct = Product(productId,productname,productdescription,productprice,productcategory)
+                val newProductAsTuple: (String, String,String,BigDecimal,String) = Product.unapply(newProduct).get
 
                 val dbio: DBIO[Int] = products += newProductAsTuple
                 var resultFuture: Future[Int] = db.run(dbio)
@@ -49,7 +55,7 @@ class Products {
 
         val productListFuture = db.run(query.result)
 
-        productListFuture.map((productList: Seq[(String, String)]) => {
+        productListFuture.map((productList: Seq[(String, String,String,BigDecimal,String)]) => {
             productList.length match {
                 case 0 => None
                 case 1 => Some(Product tupled productList.head)
@@ -61,7 +67,7 @@ class Products {
     def getAllProducts(): Future[Seq[Product]] = {
         val productListFuture = db.run(products.result)
 
-        productListFuture.map((productList: Seq[(String, String)]) => {
+        productListFuture.map((productList: Seq[(String, String,String,BigDecimal,String)]) => {
             productList.map(Product tupled _)
         })
     }
