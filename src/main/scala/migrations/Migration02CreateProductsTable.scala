@@ -11,6 +11,9 @@ class Migration02CreateProductsTable(db: Database) extends Migration with LazyLo
     class CurrentProductsTable(tag: Tag) extends Table[(String, String)](tag, "products") {
         def productId = column[String]("productId", O.PrimaryKey)
         def productname = column[String]("productname")
+        def productdescription = column[String]("productdescription")
+        def productprice = column[BigDecimal]("productprice")
+        def productcategory = column[String]("productcategory")
         def * = (productId, productname)
     }
 

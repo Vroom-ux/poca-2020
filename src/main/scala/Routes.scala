@@ -157,8 +157,8 @@ class Routes(users: Users, products : Products) extends LazyLogging {
     def addProduct(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request to add product.")
 
-        fields.get("productname") match {
-            case Some(productname) => {
+        (fields.get("productname"),fields.get("productdescription"),fields.get("productprice"),fields.get("productcategory")) match {
+            case (Some(productname),Some(productdescript),Some(productprice),Some(productcat)) => {
                 if(isEmpty(productname)){
                     Future(
                         HttpResponse(
@@ -167,7 +167,8 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                         )
                     )
                 }else{
-                    val productCreation: Future[Unit] = products.createProduct(productname=productname)
+                    val price = BigDecimal(productprice)
+                    val productCreation: Future[Unit] = products.createProduct(productname,productdescript,price,productcat)
 
                     productCreation.map(_ => {
                         HttpResponse(
