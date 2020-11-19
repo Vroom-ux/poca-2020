@@ -92,9 +92,9 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
     test("Route GET /users should display the list of users") {
         var mockUsers = mock[Users]
         val userList = List(
-            User(username="riri", userId="id1",password = "priri", mail = "toto@mail.com"),
-            User(username="fifi", userId="id2",password = "pfifi",mail = "fifi@maiil.com"),
-            User(username="lulu", userId="id2",password="",mail="")
+            User(username="riri", userId="id1",password = "priri", mail = "toto@mail.com", cart = ""),
+            User(username="fifi", userId="id2",password = "pfifi",mail = "fifi@maiil.com", cart = ""),
+            User(username="lulu", userId="id2",password="",mail="", cart = "")
         )
         (mockUsers.getAllUsers _).expects().returns(Future(userList)).once()
         var mockProduct = mock[Products]
