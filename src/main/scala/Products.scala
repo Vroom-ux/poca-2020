@@ -64,6 +64,21 @@ class Products {
         })
     }
 
+    def getProductByProductname(productname: String): Future[Option[Product]] = {
+        val query = products.filter(_.productname === productname)
+
+        val productListFuture = db.run(query.result)
+
+        productListFuture.map((productList: Seq[(String, String,String,BigDecimal,String)]) => {
+            productList.length match {
+                case 0 => None
+                case 1 => Some(Product tupled productList.head)
+                case _ => throw new InconsistentStateException(s"Productname $productname is linked to several products in database!")
+            }
+        })
+    }
+    
+
     def getAllProducts(): Future[Seq[Product]] = {
         val productListFuture = db.run(products.result)
 
