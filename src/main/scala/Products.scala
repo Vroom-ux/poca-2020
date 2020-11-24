@@ -77,7 +77,14 @@ class Products {
             }
         })
     }
-    
+
+    def getProductByProductCategory(productcat: String): Future[Seq[Product]] = {
+      val query = products.filter(_.productcategory === productcat)
+      val productListFuture = db.run(query.result)
+      productListFuture.map((productList: Seq[(String, String,String,BigDecimal,String)]) => {
+          productList.map(Product tupled _)
+      })
+    }
 
     def getAllProducts(): Future[Seq[Product]] = {
         val productListFuture = db.run(products.result)

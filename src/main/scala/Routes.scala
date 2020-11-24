@@ -1,18 +1,19 @@
 package poca
 
 import scala.concurrent.Future
-import akka.http.scaladsl.server.Directives.{path, get, post, formFieldMap, complete, concat}
+import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, path, post}
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.model.{HttpEntity, HttpResponse, ContentTypes, StatusCodes}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import com.typesafe.scalalogging.LazyLogging
 import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
+import play.twirl.api.HtmlFormat
 
 
 class Routes(users: Users, products : Products) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-    def getHello() = {
+    def getHello : HtmlFormat.Appendable = {
         logger.info("I got a request to greet.")
         //HttpEntity(
         //    ContentTypes.`text/html(UTF-8)`,
@@ -21,22 +22,22 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         html.hello()
     }
 
-    def getSignup() = {
+    def getSignup : HtmlFormat.Appendable = {
         logger.info("I got a request for signup.")
         html.signup()
     }
 
-    def getaddProductTest() = {
+    def getaddProductTest : HtmlFormat.Appendable = {
         logger.info("I got a request for addProductTest.")
         html.addProductTest()
     }
 
-    def getSignin() = {
+    def getSignin : HtmlFormat.Appendable = {
         logger.info("I got a request for signin.")
         html.signin()
     }
 
-    def isEmpty(x: String) = { x == null || x.trim.isEmpty}
+    def isEmpty(x: String) : Boolean = { x == null || x.trim.isEmpty}
 
     def login(fields: Map[String, String]): Future[HttpResponse] = {
         logger.info("I got a request for login.")
@@ -141,7 +142,7 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                             )
                         }
                     })
-                } 
+                }
             }
             case _ => {
                 Future(
@@ -183,7 +184,7 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                             )
                         }
                     })
-                } 
+                }
             }
             case _ => {
                 Future(
@@ -196,7 +197,7 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         }
     }
 
-    def getUsers() = {
+    def getUsers : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get user list.")
 
         val userSeqFuture: Future[Seq[User]] = users.getAllUsers()
@@ -204,13 +205,25 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         userSeqFuture.map(userSeq => html.users(userSeq))
     }
 
-    def getMarket() = {
+    def getMarket(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get product list.")
+        val cat : Array[String] = Array("1","2","3")
+        fields.get("SelectCategory") match {
+            case Some(category) => {
+                if(category != "All"){
+                    val productSeqfuture: Future[Seq[Product]] = products.getProductByProductCategory(category)
+                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                }else{
+                    val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                }
+            }
+            case _ => {
+                val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+                productSeqfuture.map(productSeq => html.market(productSeq,cat))
+            }
+        }}
 
-        val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-
-        productSeqfuture.map(productSeq => html.market(productSeq))
-    }
     val routes: Route = 
         concat(
             path("hello") {
@@ -244,8 +257,8 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                 }
             },
             path("market"){
-                get {
-                    complete(getMarket)
+                formFieldMap { fields =>
+                    complete(getMarket(fields))
                 }
             },
             path("addProduct"){

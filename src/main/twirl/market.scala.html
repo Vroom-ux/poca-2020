@@ -1,4 +1,4 @@
-@(products: Seq[poca.Product])
+@(products: Seq[poca.Product], cat : Array[String])
 
 <!doctype html>
 <html lang="en">
@@ -9,10 +9,18 @@
 
 <h1>Here is the list of our products.</h1>
 
-<ul>
+    <form action="/market" method="post">
+        <label for="SelectCategory"> Choose a category :</label>
+        <select name="SelectCategory" id="SelectCategory">
+            <option>All</option>
+            @for(c <- cat){
+            <option>@c</option>
+            }
+        </select>
+        <button type="submit">Choose</button>
+    </form>
     @for(product <- products) {
-    <li>@product.productId, @product.productname, @product.productdescription, @product.productprice, @product.productcategory</li>
+    <li>@product.productname, @product.productdescription, @product.productprice, @product.productcategory</li>
     }
-</ul>
 
 </html>
