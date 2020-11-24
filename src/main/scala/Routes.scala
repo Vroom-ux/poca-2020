@@ -204,13 +204,25 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         userSeqFuture.map(userSeq => html.users(userSeq))
     }
 
-    def getMarket() = {
+    def getMarket(fields: Map[String, String]) = {
         logger.info("I got a request to get product list.")
+        val cat : Array[String] = Array("1","2","3")
+        fields.get("SelectCategory") match {
+            case Some(category) => {
+                if(category != "All"){
+                    val productSeqfuture: Future[Seq[Product]] = products.getProductByProductCategory(category)
+                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                }else{
+                    val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                }
+            }
+            case _ => {
+                val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
+                productSeqfuture.map(productSeq => html.market(productSeq,cat))
+            }
+        }}
 
-        val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-
-        productSeqfuture.map(productSeq => html.market(productSeq))
-    }
     val routes: Route = 
         concat(
             path("hello") {
@@ -244,8 +256,8 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                 }
             },
             path("market"){
-                get {
-                    complete(getMarket)
+                (formFieldMap) { fields =>
+                    complete(getMarket(fields))
                 }
             },
             path("addProduct"){
