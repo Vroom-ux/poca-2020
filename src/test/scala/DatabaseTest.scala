@@ -47,7 +47,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         createUserFuture.value should be(Some(Success(())))
 
         val getUsersFuture: Future[Seq[User]] = users.getAllUsers()
-        var allUsers: Seq[User] = Await.result(getUsersFuture, Duration.Inf)
+        val allUsers: Seq[User] = Await.result(getUsersFuture, Duration.Inf)
 
         allUsers.length should be(1)
         allUsers.head.username should be("toto")
@@ -63,9 +63,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         Await.ready(createDuplicateUserFuture, Duration.Inf)
 
         createDuplicateUserFuture.value match {
-            case Some(Failure(exc: UserAlreadyExistsException)) => {
-                exc.getMessage should equal ("A user with username 'toto' already exists.")
-            }
+            case Some(Failure(exc: UserAlreadyExistsException)) => exc.getMessage should equal ("A user with username 'toto' already exists.")
             case _ => fail("The future should fail.")
         }
     }
@@ -125,7 +123,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         createProductFuture.value should be(Some(Success(())))
 
         val getProductsFuture: Future[Seq[Product]] = products.getAllProducts()
-        var allProducts: Seq[Product] = Await.result(getProductsFuture, Duration.Inf)
+        val allProducts: Seq[Product] = Await.result(getProductsFuture, Duration.Inf)
 
         allProducts.length should be(1)
         allProducts.head.productname should be("bestProduct")
@@ -169,6 +167,22 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         Await.ready(createAnotherProductFuture, Duration.Inf)
 
         val returnedProductSeqFuture: Future[Seq[Product]] = products.getAllProducts()
+        val returnedProductSeq: Seq[Product] = Await.result(returnedProductSeqFuture, Duration.Inf)
+
+        returnedProductSeq.length should be(2)
+    }
+
+    test("Products.getProductByProductCategory should return a list of products by category") {
+        val products: Products = new Products()
+
+        val createProductFuture1: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test1")
+        Await.ready(createProductFuture1, Duration.Inf)
+        val createProductFuture2: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test1")
+        Await.ready(createProductFuture2, Duration.Inf)
+        val createProductFuture3: Future[Unit] = products.createProduct("bestProduct","bestproduct",BigDecimal("0.00"),"test2")
+        Await.ready(createProductFuture3, Duration.Inf)
+
+        val returnedProductSeqFuture: Future[Seq[Product]] = products.getProductByProductCategory("test1")
         val returnedProductSeq: Seq[Product] = Await.result(returnedProductSeqFuture, Duration.Inf)
 
         returnedProductSeq.length should be(2)
