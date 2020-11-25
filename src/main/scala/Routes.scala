@@ -1,7 +1,7 @@
 package poca
 
 import scala.concurrent.Future
-import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, path, post}
+import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, path, post,getFromResource}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import com.typesafe.scalalogging.LazyLogging
@@ -270,7 +270,11 @@ class Routes(users: Users, products : Products) extends LazyLogging {
                 get {
                     complete(getaddProductTest)
                 }
+            },path("style.css"){
+               logger.info("I got a request for css ressource.")
+               getFromResource("format/style.css")
             }
+         
         )
 
 }
