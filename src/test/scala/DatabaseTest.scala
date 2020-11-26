@@ -187,4 +187,23 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
 
         returnedProductSeq.length should be(2)
     }
+    
+
+    test("Users.getCartByProductId should return the non parsed cart"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+
+        val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
+        val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
+
+        //val returnedCart: Option[String] = users.getCartByUserId(returnedUser.userId)
+
+        returnedUser match {
+            case Some(user) => user.cart should be(users.getCartByUserId(user.userId))
+        } 
+    }
+
+    
 }

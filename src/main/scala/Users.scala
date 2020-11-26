@@ -5,6 +5,8 @@ import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import java.util.UUID
 import org.mindrot.jbcrypt.BCrypt
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration.Duration
 
 case class User(userId: String, username: String, password : String, mail: String, cart: String)
 
@@ -72,7 +74,13 @@ class Users {
     }
 
 
-    // def addProductCart(String userId, String productID)
 
-    // def removeProductCart(String userId, String productID)
+    def getCartByUserId(userId: String ): String = {
+        val query = users.filter(_.userId === userId).map(u => u.cart)
+        val cartFuture = db.run(query.result)
+        val cart= Await.result(cartFuture, Duration.Inf)
+        cart(0) //unicité userId donc cart Seq avec qu'un élément
+        
+    }
+
 }
