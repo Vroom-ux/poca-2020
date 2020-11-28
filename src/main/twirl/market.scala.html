@@ -1,4 +1,4 @@
-@(products: Seq[poca.Product], cat : Array[String])
+@(products: Seq[poca.Product], cat : Seq[poca.Category])
 
 <!doctype html>
 <html lang="en">
@@ -14,7 +14,7 @@
         <select name="SelectCategory" id="SelectCategory">
             <option>All</option>
             @for(c <- cat){
-            <option>@c</option>
+            <option>@c.categoryName</option>
             }
         </select>
         <button type="submit">Choose</button>

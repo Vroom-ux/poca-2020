@@ -10,7 +10,7 @@ import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
 
 
-class Routes(users: Users, products : Products) extends LazyLogging {
+class Routes(users: Users, products : Products, categories : Categories) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     def getHello : HtmlFormat.Appendable = {
@@ -27,9 +27,12 @@ class Routes(users: Users, products : Products) extends LazyLogging {
         html.signup()
     }
 
-    def getaddProductTest : HtmlFormat.Appendable = {
+    def getaddProductTest : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request for addProductTest.")
-        html.addProductTest()
+
+        val categorySeqFuture: Future[Seq[Category]] = categories.getAllCategories()
+
+        categorySeqFuture.map(categorySeq => html.addProductTest(categorySeq))
     }
 
     def getSignin : HtmlFormat.Appendable = {
@@ -207,20 +210,20 @@ class Routes(users: Users, products : Products) extends LazyLogging {
 
     def getMarket(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get product list.")
-        val cat : Array[String] = Array("1","2","3")
+        val categoriesSeqFuture : Future[Seq[Category]] = categories.getAllCategories()
         fields.get("SelectCategory") match {
             case Some(category) => {
                 if(category != "All"){
                     val productSeqfuture: Future[Seq[Product]] = products.getProductByProductCategory(category)
-                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
                 }else{
                     val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-                    productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
                 }
             }
             case _ => {
                 val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-                productSeqfuture.map(productSeq => html.market(productSeq,cat))
+                productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
             }
         }}
 

@@ -45,7 +45,8 @@ object AppHttpServer extends LazyLogging {
 
         var users = new Users()
         var products = new Products()
-        val routes = new Routes(users, products)
+        var categories = new Categories()
+        val routes = new Routes(users, products,categories)
 
         val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bind(routes.routes)
 

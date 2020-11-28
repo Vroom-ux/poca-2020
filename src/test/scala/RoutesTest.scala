@@ -1,12 +1,12 @@
 
 import scala.concurrent.Future
 import akka.actor.testkit.typed.scaladsl.ActorTestKit
-import akka.http.scaladsl.model.{HttpRequest, StatusCodes, ContentTypes, FormData, HttpMethods}
+import akka.http.scaladsl.model.{ContentTypes, FormData, HttpMethods, HttpRequest, StatusCodes}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalamock.scalatest.MockFactory
-import poca.{MyDatabase, Users, User, Products,Product, UserAlreadyExistsException, Routes}
+import poca.{Categories, MyDatabase, Product, Products, Routes, User, UserAlreadyExistsException, Users}
 
 
 class RoutesTest extends AnyFunSuite with Matchers with MockFactory with ScalatestRouteTest {
@@ -35,8 +35,8 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
     test("Route GET /signup should returns the signup page") {
         var mockUsers = mock[Users]
         var mockProduct = mock[Products]
-
-        val routesUnderTest = new Routes(mockUsers,mockProduct).routes
+        var mockCategories = mock[Categories]
+        val routesUnderTest = new Routes(mockUsers,mockProduct,mockCategories).routes
 
         val request = HttpRequest(uri = "/signup")
         request ~> routesUnderTest ~> check {
@@ -50,7 +50,9 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
         var mockUsers = mock[Users]
         (mockUsers.createUser _).expects("toto","ptoto","toto@mail.com").returning(Future(())).once()
         var mockProduct = mock[Products]
-        val routesUnderTest = new Routes(mockUsers,mockProduct).routes
+        var mockCategories = mock[Categories]
+
+        val routesUnderTest = new Routes(mockUsers,mockProduct,mockCategories).routes
 
         val request = HttpRequest(
             method = HttpMethods.POST,
@@ -72,8 +74,9 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
             throw new UserAlreadyExistsException("")
         })).once()
         var mockProduct = mock[Products]
+        var mockCategories = mock[Categories]
 
-        val routesUnderTest = new Routes(mockUsers,mockProduct).routes
+        val routesUnderTest = new Routes(mockUsers,mockProduct, mockCategories).routes
 
         val request = HttpRequest(
             method = HttpMethods.POST,
@@ -98,8 +101,9 @@ class RoutesTest extends AnyFunSuite with Matchers with MockFactory with Scalate
         )
         (mockUsers.getAllUsers _).expects().returns(Future(userList)).once()
         var mockProduct = mock[Products]
+        var mockCategories = mock[Categories]
 
-        val routesUnderTest = new Routes(mockUsers,mockProduct).routes
+        val routesUnderTest = new Routes(mockUsers,mockProduct,mockCategories).routes
 
         val request = HttpRequest(uri = "/users")
         request ~> routesUnderTest ~> check {
