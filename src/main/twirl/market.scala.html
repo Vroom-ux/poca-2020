@@ -14,13 +14,15 @@
         <select name="SelectCategory" id="SelectCategory">
             <option>All</option>
             @for(c <- cat){
-            <option>@c.categoryName</option>
+            <option>@c</option>
             }
         </select>
         <button type="submit">Choose</button>
     </form>
     @for(product <- products) {
-    <li>@product.productname, @product.productdescription, @product.productprice, @product.productcategory</li>
+    <li>@product.productId,@product.productname,@product.productprice </li>
+    <p> <a href="productdetails">detail-of-product</a> </p>
     }
+  
 
 </html>
