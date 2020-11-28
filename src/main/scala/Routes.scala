@@ -286,8 +286,12 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             },path("style.css"){
                logger.info("I got a request for css ressource.")
                getFromResource("format/style.css")
-            }
-         
+            },
+            path("productdetails") {
+                formFieldMap { fields =>
+                    complete(getproductdetails(fields))
+                }
+         }
         )
 
 }
