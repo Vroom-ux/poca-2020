@@ -227,6 +227,16 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             }
         }}
 
+   def getproductdetails(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
+        logger.info("I got a request to get details of product.")
+    
+        fields.get("productId") match {
+            case Some(productId) => {
+                
+                    val productOPTfuture: Future[Option[Product]] = products.getProductByProductId(productId)
+                    productOPTfuture.map(productOPT => html.productdetails(productOPT))
+}}}
+
     val routes: Route = 
         concat(
             path("hello") {
@@ -276,8 +286,12 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             },path("style.css"){
                logger.info("I got a request for css ressource.")
                getFromResource("format/style.css")
-            }
-         
+            },
+            path("productdetails") {
+                formFieldMap { fields =>
+                    complete(getproductdetails(fields))
+                }
+         }
         )
 
 }
