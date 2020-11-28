@@ -1,0 +1,15 @@
+
+@(products: Option[poca.Product])
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amazoon</title>
+</head>
+
+<h1>Here is the detail of our product.</h1>
+    @for(product <- products) {
+    <li>@product.productname, @product.productdescription, @product.productprice, @product.productcategory</li>}
+    
+</html>
