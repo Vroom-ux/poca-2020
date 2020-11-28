@@ -1,4 +1,4 @@
-@()
+@(categories : Seq[poca.Category])
 
 <!doctype html>
 <html lang="en">
@@ -19,7 +19,12 @@
         <label for="productprice">Product price:</label><br>
         <input type="number" min = "0.00" step="any" name="productprice"><br>
         <label for="productcategory">Product category:</label><br>
-        <input type="text" name="productcategory"><br>
+        <select name="productcategory" id="productcategory">
+            <option>None</option>
+            @for(c <- categories){
+            <option>@c.categoryName</option>
+            }
+        </select>
         <input type="submit">
     </form>
 

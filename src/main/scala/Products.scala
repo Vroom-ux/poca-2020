@@ -6,6 +6,8 @@ import java.util.UUID
 
 case class Product(productId: String, productname: String, productdescription : String, productprice : BigDecimal, productcategory : String)
 
+
+//TODO remove this exeception : it doesn't matter if two products have the same name.
 final case class ProductAlreadyExistsException(private val message: String="", private val cause: Throwable=None.orNull)
   extends Exception(message, cause)
 
@@ -35,7 +37,7 @@ class Products {
         val existingProductsFuture = getProductByProductId(productId)
         existingProductsFuture .flatMap(existingProducts => {
             if (existingProducts.isEmpty) {
-                
+
                 val newProduct = Product(productId,productname,productdescription,productprice,productcategory)
                 val newProductAsTuple: (String, String,String,BigDecimal,String) = Product.unapply(newProduct).get
 
