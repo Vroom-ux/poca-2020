@@ -1,16 +1,16 @@
 
-import scala.util.{Success, Failure}
-import scala.concurrent.{Future, Await}
+import scala.util.{Failure, Success}
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.meta._
-import org.scalatest.{Matchers, BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatest.funsuite.AnyFunSuite
 import com.typesafe.scalalogging.LazyLogging
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import ch.qos.logback.classic.{Level, Logger}
 import org.slf4j.LoggerFactory
-import poca.{MyDatabase, Users, User, UserAlreadyExistsException, Products, Product, ProductAlreadyExistsException, Routes, RunMigrations}
+import poca.{Categories, Category, CategoryAlreadyExistsException, MyDatabase, Product, ProductAlreadyExistsException, Products, Routes, RunMigrations, User, UserAlreadyExistsException, Users}
 
 
 class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with LazyLogging {
@@ -205,5 +205,57 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         } 
     }
 
+    test("Categories.addCategory should add new category"){
+        val categories: Categories = new Categories()
+
+        val createCategoryFuture: Future[Unit] = categories.addCategory("toto")
+        Await.ready(createCategoryFuture, Duration.Inf)
+
+        // Check that the future succeeds
+        createCategoryFuture.value should be(Some(Success(())))
+
+        val getCategoriesFuture: Future[Seq[Category]] = categories.getAllCategories()
+        val allCategories: Seq[Category] = Await.result(getCategoriesFuture, Duration.Inf)
+
+        allCategories.length should be(7)
+        //TODO : have to change this test if add by alphabetical order is implemented
+        allCategories.last.categoryName should be ("toto")
+    }
+
+    test("Categories.addCategory returned future should fail if the category already exists") {
+        val categories: Categories = new Categories()
+
+        val createCategoryFuture: Future[Unit] = categories.addCategory("toto")
+        Await.ready(createCategoryFuture, Duration.Inf)
+
+        val createDupCategoryFuture: Future[Unit] = categories.addCategory("toto")
+        Await.ready(createDupCategoryFuture, Duration.Inf)
+
+        createDupCategoryFuture.value match {
+            case Some(Failure(exc: CategoryAlreadyExistsException)) => exc.getMessage should equal ("A Category with Categoryname 'toto' already exists.")
+            case _ => fail("The future should fail.")
+        }
+    }
+
+    test("Categories.getCategorybyCategoryName should return a category") {
+        val categories: Categories = new Categories()
+
+        val returnedCategoryFuture: Future[Option[Category]] = categories.getCategorybyCategoryName("Sport")
+        val returnedCategory: Option[Category] = Await.result(returnedCategoryFuture, Duration.Inf)
+
+        returnedCategory match {
+            case Some(category) => category.categoryName should be("Sport")
+            case None => fail("Should return a category.")
+        }
+    }
+
+    test("Categories.getAllCategories should return a list of categories") {
+        val categories: Categories = new Categories()
+
+        val returnedCategoryFutureSeq: Future[Seq[Category]] = categories.getAllCategories()
+        val returnedCategorySeq: Seq[Category] = Await.result(returnedCategoryFutureSeq, Duration.Inf)
+
+        returnedCategorySeq.length should be(6)
+    }
     
 }

@@ -227,7 +227,7 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             }
         }}
 
-   def getproductdetails(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
+    def getproductdetails(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get details of product.")
     
         fields.get("productId") match {
@@ -235,7 +235,16 @@ class Routes(users: Users, products : Products, categories : Categories) extends
                 
                     val productOPTfuture: Future[Option[Product]] = products.getProductByProductId(productId)
                     productOPTfuture.map(productOPT => html.productdetails(productOPT))
-}}}
+            }
+        }
+    }
+
+    def getProfile() :HtmlFormat.Appendable  = {
+        logger.info("I got a request to get user's profile")
+
+        html.profile()
+    }
+
 
     val routes: Route = 
         concat(
@@ -291,7 +300,12 @@ class Routes(users: Users, products : Products, categories : Categories) extends
                 formFieldMap { fields =>
                     complete(getproductdetails(fields))
                 }
-         }
+            },
+            path("profile") {
+                get {
+                    complete(getProfile)
+                }
+            }
         )
 
 }
