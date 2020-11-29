@@ -1,15 +1,17 @@
 
 package poca
 
-import scala.concurrent.{Future, Await}
+import java.util.UUID
+
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.PostgresProfile.api._
 
 
 class Migration03CreateCategoryTable(db: Database) extends Migration with LazyLogging {
-  class CurrentCategoryTable(tag: Tag) extends Table[(Int, String)](tag, "categories") {
-    def categoryId = column[Int]("categoryId", O.PrimaryKey)
+  class CurrentCategoryTable(tag: Tag) extends Table[(String, String)](tag, "categories") {
+    def categoryId = column[String]("categoryId", O.PrimaryKey)
     def categoryName = column[String]("categoryname")
     def * = (categoryId, categoryName)
   }
@@ -24,12 +26,12 @@ class Migration03CreateCategoryTable(db: Database) extends Migration with LazyLo
     val adddefaultcategoriesFuture: Future[Unit] = db.run(
       DBIO.seq(
         categories ++= Seq(
-          (1,"Animalerie"),
-          (2,"Bijoux"),
-          (3,"Bricolage"),
-          (4,"Informatique"),
-          (5,"Mode"),
-          (6,"Sport")
+          (UUID.randomUUID.toString(),"Animalerie"),
+          (UUID.randomUUID.toString(),"Bijoux"),
+          (UUID.randomUUID.toString(),"Bricolage"),
+          (UUID.randomUUID.toString(),"Informatique"),
+          (UUID.randomUUID.toString(),"Mode"),
+          (UUID.randomUUID.toString(),"Sport")
         )
       )
     )
