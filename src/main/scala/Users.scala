@@ -65,6 +65,41 @@ class Users {
         })
     }
 
+    def changeUsername(uname : String, newusername : String) = {
+        val userFuture = getUserByUsername(uname)
+        userFuture.map{
+            case Some(user) => {
+                val query = users.update(user.userId,newusername,user.password,user.mail,user.cart)
+                db.run(query)
+            }
+            case _ =>
+        }
+    }
+
+    def changePassword(username : String, newpassword : String ) = {
+        val userFuture = getUserByUsername(username)
+        val protectpassword = BCrypt.hashpw(newpassword,BCrypt.gensalt(12))
+
+        userFuture.map{
+            case Some(user) => {
+                val query = users.update(user.userId,user.username,protectpassword,user.mail,user.cart)
+                db.run(query)
+            }
+            case _ =>
+        }
+    }
+
+    def changeMail(uname : String, newMail : String) = {
+        val userFuture = getUserByUsername(uname)
+        userFuture.map{
+            case Some(user) => {
+                val query = users.update(user.userId,user.username,user.password,newMail,user.cart)
+                db.run(query)
+            }
+            case _ =>
+        }
+    }
+
     def getAllUsers(): Future[Seq[User]] = {
         val userListFuture = db.run(users.result)
 
