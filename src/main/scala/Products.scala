@@ -1,8 +1,11 @@
 package poca
 
-import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import java.util.UUID
+import scala.util.{Success, Failure}
+import scala.util.control.Breaks._
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ Await, Future }
 
 case class Product(productId: String, productname: String, productdescription : String, productprice : BigDecimal, productcategory : String)
 
@@ -93,6 +96,28 @@ class Products {
 
         productListFuture.map((productList: Seq[(String, String,String,BigDecimal,String)]) => {
             productList.map(Product tupled _)
+        })
+    }
+
+    def getSuggestion(userInput : String) : Future[List[String]] = {
+        getAllProducts().map({ products => {
+                val MAX_SUGGESTIONS = 3
+                var lst : List[String] = List()
+                var sorted_products_name = products.map(x=>x.productname).sorted
+                var j = 0
+                breakable {
+                    for(product <- sorted_products_name){
+                        if(product.size >= userInput.size && product.substring(0,userInput.size) == userInput){
+                            lst = product::lst
+                            j+=1
+                            if(j == MAX_SUGGESTIONS){
+                                break                    
+                            }
+                        }
+                    }
+                }
+                lst.reverse
+            }
         })
     }
 }
