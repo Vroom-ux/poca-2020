@@ -11,35 +11,27 @@
 <div class="imgcontainer">
   <img src="logo" alt="logo" class="logo">
 </div>
-
-<form action="/register" method="post">
-
-    <h1>Sign-up</h1>
-
-    <p>Here you can sign-up to our marvelous web application.</p>
-
 <div class="container">
-    <label for="username"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="username" required>
+  <form action="/register" method="post">
+    <h1>Sign-up</h1>
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" required>
 
-    <label for="password"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="password" required>
-    
-    <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Enter Email" name="email" required>
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" required>
+      
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email" name="email" required>
 
 
-    <button type="submit">Sign up</button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
-  </div>
-
- <div class="clearfix">
-      <button type="button" class="cancelbtn">Cancel</button>
-    
+      <button type="submit">Sign up</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
     </div>
 
-    <p>Already have an account? <a href="signin">Sign-in</a></p>
-</form> 
+    <p><span style="float: right; margin-top: 10px">Already have an account? <a href="signin">Sign-in</a></span></p>
+  </form> 
+</div>
 
