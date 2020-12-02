@@ -10,6 +10,7 @@ import com.typesafe.scalalogging.LazyLogging
 import ch.qos.logback.classic.{Level, Logger}
 import org.slf4j.LoggerFactory
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
+import scala.util.{Success, Failure}
 
 
 object AppHttpServer extends LazyLogging {
@@ -54,6 +55,10 @@ object AppHttpServer extends LazyLogging {
             val address = binding.localAddress
             logger.info(s"Server online at http://${address.getHostString}:${address.getPort}/")
         })
+        /*(products.getSuggestion("prod")) onComplete{
+            case Success(x) => {x.foreach(y=>println("product: "+y))}
+            case Failure(e) => println("Could not get suggestions")
+        }*/
 
         val waitOnFuture = serverStartedFuture.flatMap(unit => Future.never)
         
