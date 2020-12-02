@@ -1,12 +1,28 @@
- /* Bordered form */
+* {
+  font-size: 100%;
+  font-family: normal x-small verdana, arial, helvetica, sans-serif;
+ }
+
+/* Bordered form */
 form {
   border: 3px solid #f1f1f1;
+}
+
+h1 {
+  text-align: center;
+  display: block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
 }
 
 /* Full-width inputs */
 input[type=text], input[type=password] {
   width: 100%;
-  padding: 12px 20px;
+  padding: 12px 5px;
   margin: 8px 0;
   display: inline-block;
   border: 1px solid #ccc;
@@ -39,18 +55,21 @@ button:hover {
 /* Center the logo image inside this container */
 .imgcontainer {
   text-align: center;
-  margin: 24px 0 12px 0;
+  padding: 6px;
 }
 
 /* logo image */
 img.logo {
-  width: 100px;
+  width: 150px;
   min-width: 40px;
 }
 
 /* Add padding to containers */
 .container {
-  padding: 16px;
+  padding: 6px;
+  margin: 0 auto;
+  max-width: 1280px;
+  width: 50%;
 }
 
 /* The "Forgot password" text */
