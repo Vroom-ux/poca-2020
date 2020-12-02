@@ -295,6 +295,9 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             },path("style.css"){
                logger.info("I got a request for css ressource.")
                getFromResource("format/style.css")
+            },path("logo"){
+               logger.info("I got a request for the logo.")
+               getFromResource("img/logo.png")
             },
             path("productdetails") {
                 formFieldMap { fields =>
