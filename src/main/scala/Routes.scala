@@ -9,7 +9,6 @@ import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
 
-
 class Routes(users: Users, products : Products, categories : Categories) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
