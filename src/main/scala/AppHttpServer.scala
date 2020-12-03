@@ -65,7 +65,7 @@ def main(args: Array[String]): Unit = {
         var users = new Users()
         var products = new Products()
         var categories = new Categories()
-        val routes = new Routes(users, products,categories,myRequiredSession,myInvalidateSession,mySetSession)
+        val routes = new Routes(users, products,categories)
         
         val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bind(routes.routes)
 
