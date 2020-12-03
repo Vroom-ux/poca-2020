@@ -9,8 +9,15 @@ import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
 
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.server.Directives._
+import com.softwaremill.session.CsrfDirectives._
+import com.softwaremill.session.CsrfOptions._
+import com.softwaremill.session.SessionDirectives._
+import com.softwaremill.session.SessionOptions._
+import com.softwaremill.session._
 
-class Routes(users: Users, products : Products, categories : Categories) extends LazyLogging {
+class Routes(users: Users, products : Products, categories : Categories, myRequiredSession : akka.http.scaladsl.server.Directive1[(poca.MyScalaSession)], myInvalidateSession : akka.http.scaladsl.server.Directive[Unit],  mySetSession : MyScalaSession => akka.http.scaladsl.server.Directive[Unit]) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     def getHello : HtmlFormat.Appendable = {
