@@ -1,7 +1,7 @@
 package poca
 
 import scala.concurrent.Future
-import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, path, post,getFromResource}
+import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, getFromResource, parameters, path, post}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import com.typesafe.scalalogging.LazyLogging
@@ -226,16 +226,10 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             }
         }}
 
-    def getproductdetails(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
+    def getproductdetails(productId: String) : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get details of product.")
-    
-        fields.get("productId") match {
-            case Some(productId) => {
-                
-                    val productOPTfuture: Future[Option[Product]] = products.getProductByProductId(productId)
-                    productOPTfuture.map(productOPT => html.productdetails(productOPT))
-            }
-        }
+        val productFuture = products.getProductByProductId(productId)
+        productFuture.map(productOPT => html.productdetails(productOPT))
     }
 
     def getProfile() :HtmlFormat.Appendable  = {
@@ -299,8 +293,10 @@ class Routes(users: Users, products : Products, categories : Categories) extends
                getFromResource("img/logo.png")
             },
             path("productdetails") {
-                formFieldMap { fields =>
-                    complete(getproductdetails(fields))
+                get {
+                    parameters("pId") { pId =>
+                        complete(getproductdetails(pId))
+                    }
                 }
             },
             path("profile") {

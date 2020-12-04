@@ -21,8 +21,7 @@
         <button type="submit">Choose</button>
     </form>
     @for(product <- products) {
-    <li>@product.productname,@product.productprice € </li>
-    <p> <a href="productdetails">detail-of-product</a> </p>
+<li>Name : <a href="productdetails?pId=@product.productId"> @product.productname</a>, Price : @product.productprice € </li>
     }
   
 
