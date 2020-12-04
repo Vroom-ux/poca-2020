@@ -11,6 +11,9 @@
 
 <h1>Here is the detail of our product.</h1>
     @for(product <- products) {
-    <li>@product.productname, @product.productdescription, @product.productprice, @product.productcategory</li>}
+    Name : @product.productname
+    Description : @product.productdescription
+    Category : @product.productcategory
+    Price : @product.productprice}
     
 </html>
