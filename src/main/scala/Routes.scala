@@ -210,19 +210,20 @@ class Routes(users: Users, products : Products, categories : Categories) extends
     def getMarket(fields: Map[String, String]) : Future[HtmlFormat.Appendable] = {
         logger.info("I got a request to get product list.")
         val categoriesSeqFuture : Future[Seq[Category]] = categories.getAllCategories()
-        fields.get("SelectCategory") match {
-            case Some(category) => {
-                if(category != "All"){
-                    val productSeqfuture: Future[Seq[Product]] = products.getProductByProductCategory(category)
-                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
-                }else{
-                    val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
+        (fields.get("SelectCategory"),fields.get("sortByPrice")) match {
+            case (Some(category),Some(price)) => {
+                val productSeqfuture: Future[Seq[Product]] = if(category != "All") products.getProductByProductCategory(category) else products.getAllProducts()
+                if(price == "Lowest first"){
+                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq.sortWith(_.productprice<_.productprice),cat,category)))
+                }else if(price == "Highest first"){
+                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq.sortWith(_.productprice>_.productprice),cat,category)))
+                }else {
+                    productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq, cat, category)))
                 }
             }
             case _ => {
                 val productSeqfuture: Future[Seq[Product]] = products.getAllProducts()
-                productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat)))
+                productSeqfuture.flatMap(productSeq => categoriesSeqFuture.map(cat => html.market(productSeq,cat,"")))
             }
         }}
 
