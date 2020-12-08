@@ -9,6 +9,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import com.typesafe.scalalogging.LazyLogging
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import ch.qos.logback.classic.{Level, Logger}
+import org.mindrot.jbcrypt.BCrypt
 import org.slf4j.LoggerFactory
 import poca.{Categories, Category, CategoryAlreadyExistsException, MyDatabase, Product, ProductAlreadyExistsException, Products, Routes, RunMigrations, User, UserAlreadyExistsException, Users}
 
@@ -110,6 +111,82 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
         returnedUserSeq.length should be(2)
     }
 
+    test("Users.getCartByProductId should return the non parsed cart"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+
+        val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
+        val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
+
+        //val returnedCart: Option[String] = users.getCartByUserId(returnedUser.userId)
+
+        returnedUser match {
+            case Some(user) => user.cart should be(users.getCartByUserId(user.userId))
+        }
+    }
+
+    test("Users.changeUsername should change user's username"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+        createUserFuture.value should be(Some(Success(())))
+
+        val returnedFuture: Future[Unit] = users.changeUsername("toto","tata")
+        Await.ready(returnedFuture, Duration.Inf)
+        returnedFuture.value should be(Some(Success(())))
+
+        val getUsersFuture: Future[Seq[User]] = users.getAllUsers()
+        val allUsers: Seq[User] = Await.result(getUsersFuture, Duration.Inf)
+
+        allUsers.length should be(1)
+        allUsers.head.username should be("tata")
+
+    }
+
+    /*test("Users.changePassword should change user's Password"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+        createUserFuture.value should be(Some(Success(())))
+
+        val password = "ptata"
+        val returnedFuture: Future[Unit] = users.changePassword("toto",password)
+        val protectpassword = BCrypt.hashpw(password,BCrypt.gensalt(12))
+
+        Await.ready(returnedFuture, Duration.Inf)
+        returnedFuture.value should be(Some(Success(())))
+
+        val getUsersFuture: Future[Seq[User]] = users.getAllUsers()
+        val allUsers: Seq[User] = Await.result(getUsersFuture, Duration.Inf)
+
+        allUsers.length should be(1)
+        allUsers.head.password should be(protectpassword)
+
+    }*/
+
+    test("Users.changeMail should change user's Mail"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+        createUserFuture.value should be(Some(Success(())))
+
+        val returnedFuture: Future[Unit] = users.changeMail("toto","tata@mail.com")
+        Await.ready(returnedFuture, Duration.Inf)
+        returnedFuture.value should be(Some(Success(())))
+
+        val getUsersFuture: Future[Seq[User]] = users.getAllUsers()
+        val allUsers: Seq[User] = Await.result(getUsersFuture, Duration.Inf)
+
+        allUsers.length should be(1)
+        allUsers.head.mail should be("tata@mail.com")
+
+    }
+
 
     // Products
 
@@ -187,23 +264,7 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
 
         returnedProductSeq.length should be(2)
     }
-    
 
-    test("Users.getCartByProductId should return the non parsed cart"){
-        val users: Users = new Users()
-
-        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
-        Await.ready(createUserFuture, Duration.Inf)
-
-        val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
-        val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
-
-        //val returnedCart: Option[String] = users.getCartByUserId(returnedUser.userId)
-
-        returnedUser match {
-            case Some(user) => user.cart should be(users.getCartByUserId(user.userId))
-        } 
-    }
 
     test("Categories.addCategory should add new category"){
         val categories: Categories = new Categories()
