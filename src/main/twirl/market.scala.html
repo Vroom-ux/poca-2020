@@ -1,4 +1,4 @@
-@(products: Seq[poca.Product], cat : Seq[poca.Category])
+@(products: Seq[poca.Product], cat : Seq[poca.Category], selectedcat : String)
 
 <!doctype html>
 <html lang="en">
@@ -15,8 +15,18 @@
         <select name="SelectCategory" id="SelectCategory">
             <option>All</option>
             @for(c <- cat){
-            <option>@c.categoryName</option>
+                @if( c.categoryName == selectedcat){
+                    <option selected>@c.categoryName</option>
+                }else{
+                    <option>@c.categoryName</option>
+                }
             }
+        </select>
+        <label for="sortByPrice">Sort by price :</label>
+        <select name="sortByPrice" id="sortByPrice">
+            <option></option>
+            <option>Lowest first</option>
+            <option>Highest first</option>
         </select>
         <button type="submit">Choose</button>
     </form>

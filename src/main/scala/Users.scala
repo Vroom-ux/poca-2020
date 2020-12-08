@@ -65,7 +65,7 @@ class Users {
         })
     }
 
-    def changeUsername(uname : String, newusername : String) = {
+    def changeUsername(uname : String, newusername : String) : Future[Unit] = {
         val userFuture = getUserByUsername(uname)
         userFuture.map{
             case Some(user) => {
@@ -76,7 +76,7 @@ class Users {
         }
     }
 
-    def changePassword(username : String, newpassword : String ) = {
+    def changePassword(username : String, newpassword : String ) : Future[Unit] = {
         val userFuture = getUserByUsername(username)
         val protectpassword = BCrypt.hashpw(newpassword,BCrypt.gensalt(12))
 
@@ -89,7 +89,7 @@ class Users {
         }
     }
 
-    def changeMail(uname : String, newMail : String) = {
+    def changeMail(uname : String, newMail : String) : Future[Unit] = {
         val userFuture = getUserByUsername(uname)
         userFuture.map{
             case Some(user) => {
