@@ -110,20 +110,83 @@ class DatabaseTest extends AnyFunSuite with Matchers with BeforeAndAfterAll with
 
         returnedUserSeq.length should be(2)
     }
-
-    test("Users.getCartByProductId should return the non parsed cart"){
+    
+    // Cart
+    test("Users.getCartByUsername should return the non parsed cart"){
         val users: Users = new Users()
 
         val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
         Await.ready(createUserFuture, Duration.Inf)
 
+        val FutureCart: Future[String] = users.getCartByUsername("toto")
+        val Cart: String = Await.result(FutureCart, Duration.Inf)
+
+        Cart should be("")
+    }
+
+    test("Users.addProductCart should add product to cart"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+
+
+        val returnedFuture: Future[Unit] = users.addProductCart("toto", "01")
+        Await.ready(returnedFuture, Duration.Inf)
+
         val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
         val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
 
-        //val returnedCart: Option[String] = users.getCartByUserId(returnedUser.userId)
+        returnedUser match {
+            case Some(user) => user.cart should be("01,")
+        }
+    }
+
+    test("Users.removeProductCart should remove product to cart"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+
+
+        val returnedFuture1: Future[Unit] = users.addProductCart("toto", "01")
+        Await.ready(returnedFuture1, Duration.Inf)
+
+        val returnedFuture2: Future[Unit] = users.addProductCart("toto", "02")
+        Await.ready(returnedFuture2, Duration.Inf)
+
+        val returnedFuture3: Future[Unit] = users.addProductCart("toto", "03")
+        Await.ready(returnedFuture3, Duration.Inf)
+
+        val returnedFuture: Future[Unit] = users.removeProductCart("toto", "03")
+        Await.ready(returnedFuture, Duration.Inf)
+
+        val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
+        val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
 
         returnedUser match {
-            case Some(user) => user.cart should be(users.getCartByUserId(user.userId))
+            case Some(user) => user.cart should be("01,02,")
+        }
+    }
+
+    test("Users.removeProductCart should do nothing if the product isn't in the cart"){
+        val users: Users = new Users()
+
+        val createUserFuture: Future[Unit] = users.createUser("toto","ptoto","toto@mail.com")
+        Await.ready(createUserFuture, Duration.Inf)
+
+
+        val returnedFuture1: Future[Unit] = users.addProductCart("toto", "01")
+        Await.ready(returnedFuture1, Duration.Inf)
+
+        val returnedFuture: Future[Unit] = users.removeProductCart("toto", "03")
+        Await.ready(returnedFuture, Duration.Inf)
+
+        val returnedUserFuture: Future[Option[User]] = users.getUserByUsername("toto")
+        val returnedUser: Option[User] = Await.result(returnedUserFuture, Duration.Inf)
+
+        returnedUser match {
+            case Some(user) => user.cart should be("01,")
         }
     }
 
