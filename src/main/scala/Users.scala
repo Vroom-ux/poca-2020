@@ -109,13 +109,40 @@ class Users {
     }
 
 
-
-    def getCartByUserId(userId: String ): String = {
-        val query = users.filter(_.userId === userId).map(u => u.cart)
-        val cartFuture = db.run(query.result)
-        val cart= Await.result(cartFuture, Duration.Inf)
-        cart(0) //unicité userId donc cart Seq avec qu'un élément
+    
+    def getCartByUsername(username: String ): Future[String] = {
+        val userFuture = getUserByUsername(username)
+        userFuture.map{
+            case Some(user) => {
+                user.cart
+            }
+        }
         
+    }
+    
+
+    def addProductCart(username: String , productID: String): Future[Unit] = {
+        val userFuture = getUserByUsername(username)
+        userFuture.map{
+            case Some(user) => {
+                val newCart = user.cart + productID +","
+                val query = users.update(user.userId,user.username,user.password,user.mail,newCart)
+                db.run(query)
+            }
+            case _ =>
+        }
+    }
+
+    def removeProductCart(username: String , productID: String): Future[Unit] = {
+        val userFuture = getUserByUsername(username)
+        userFuture.map{
+            case Some(user) => {
+                val newCart = user.cart.replace(productID+",", "") 
+                val query = users.update(user.userId,user.username,user.password,user.mail,newCart)
+                db.run(query)
+            }
+            case _ =>
+        }
     }
 
 }
