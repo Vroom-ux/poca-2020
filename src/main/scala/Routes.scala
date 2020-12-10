@@ -9,8 +9,26 @@ import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
 
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.server.Directives._
+import com.softwaremill.session.CsrfDirectives._
+import com.softwaremill.session.CsrfOptions._
+import com.softwaremill.session.SessionDirectives._
+import com.softwaremill.session.SessionOptions._
+import com.softwaremill.session._
+
 class Routes(users: Users, products : Products, categories : Categories) extends LazyLogging {
     implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
+
+ val sessionConfig = SessionConfig.default(
+"c05ll3lesrinf39t7mc5h6un6r0c69lgfno69dsak3vabeqamouq4328cuaekros401ajdpkh60rrtpd8ro24rbuqmgtnd1ebag6ljnb65i8a55d482ok7o0nch0bfbe")
+    implicit val sessionManager = new SessionManager[MyScalaSession](sessionConfig)
+    implicit val refreshTokenStorage = new InMemoryRefreshTokenStorage[MyScalaSession] {
+        def log(msg: String) = logger.info(msg)
+    }
+    def mySetSession(v: MyScalaSession) = setSession(oneOff, usingCookies, v)
+    val myRequiredSession = requiredSession(oneOff, usingCookies)
+    val myInvalidateSession = invalidateSession(oneOff, usingCookies)
 
     def getHello : HtmlFormat.Appendable = {
         logger.info("I got a request to greet.")
@@ -305,7 +323,39 @@ class Routes(users: Users, products : Products, categories : Categories) extends
                 get {
                     complete(getProfile)
                 }
-            }
+            },
+            path("do_login") {
+                post {
+                    entity(as[String]) { body =>
+                        logger.info(s"Logging in $body")
+
+                        mySetSession(MyScalaSession(body)) {
+                            setNewCsrfToken(checkHeader) { ctx =>
+                                ctx.complete("ok")
+                            }
+                        }
+                    }
+                }
+            },
+            path("current_login") {
+                get {
+                    myRequiredSession { session => ctx =>
+                        logger.info("Current session: " + session)
+                        ctx.complete(session.username)
+                    }
+                }
+            },
+            path("do_logout") {
+                myRequiredSession { 
+                    session =>
+                    mySetSession(MyScalaSession("")) {
+                        setNewCsrfToken(checkHeader) { ctx =>
+                            logger.info(s"Logging out $session")
+                            ctx.complete("ok")
+                        }
+                    }
+                }
+            }    
         )
 
 }
