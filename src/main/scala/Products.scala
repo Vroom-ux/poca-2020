@@ -99,24 +99,18 @@ class Products {
         })
     }
 
-    def getSuggestion(userInput : String) : Future[List[String]] = {
-        getAllProducts().map({ products => {
-                val MAX_SUGGESTIONS = 3
-                var lst : List[String] = List()
-                var sorted_products_name = products.map(x=>x.productname).sorted
-                var j = 0
-                breakable {
-                    for(product <- sorted_products_name){
-                        if(product.size >= userInput.size && product.substring(0,userInput.size) == userInput){
-                            lst = product::lst
-                            j+=1
-                            if(j == MAX_SUGGESTIONS){
-                                break                    
-                            }
-                        }
+    def getSuggestion(ftr : Future[Seq[Product]], userInput : String) : Future[Seq[Product]] = {
+        ftr.map({ products => {
+                var seq : Seq[Product] = Seq()
+                var sorted_products = products.sortBy(_.productname)
+                for(product <- sorted_products){
+                    val name = product.productname
+                    if(name.size >= userInput.size && name.substring(0,userInput.size) == userInput){
+                        seq = product+:seq
                     }
                 }
-                lst.reverse
+
+                seq
             }
         })
     }
