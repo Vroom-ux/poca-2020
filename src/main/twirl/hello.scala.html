@@ -3,15 +3,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
+    
     <title>Amazoon</title>
+
+<style>
+body { background-color: #D3D3D3; }
+.header{
+    text-align: right;
+    left: 0;
+    right: 0;
+    height: 200px;
+    line-height: 200px;
+    background-color: #EFEFEF;
+}
+
+
+.navbar {
+  overflow: hidden; /* Hide overflow */
+  background-color: #333; /* Dark background color */
+}
+
+/* Style the navigation bar links */
+.navbar a {
+  float: left; /* Make sure that the links stay side-by-side */
+  display: block; /* Change the display to block, for responsive reasons (see below) */
+  color: white; /* White text color */
+  text-align: center; /* Center the text */
+  padding: 14px 20px; /* Add some padding */
+  text-decoration: none; /* Remove underline */
+}
+
+/* Right-aligned link */
+.navbar a.right {
+  float: right; /* Float a link to the right */
+}
+
+/* Change color on hover/mouse-over */
+.navbar a:hover {
+  background-color: #ddd; /* Grey background color */
+  color: black; /* Black text color */
+}
+
+.imgcontainer {
+
+  text-align: left;
+  padding: 6px;
+}
+
+img.logo {
+  width: 150px;
+  min-width: 40px;
+}
+</style>
+  
+
 </head>
-<body>
-<p>Welcome to our marvelous website.</p>
-<p>Don't have an account? <a href="signup">Sign-up</a> now ! </p>
-<p>Have an account already? Well you just have to <a href="signin">Sign-in</a></p>
+
+  <div class="header">
+  
+  <div class="imgcontainer">
+  <img src="logo" alt="logo" class="logo" style="float: left;" > <h1> Welcome to our mervelous site </h1>
+  </div> 
+  </div> 
+
+<div class="navbar">
+  <a href="Product-Card" class="right">Product-Card</a>
+  <a href="signin" class="right">Sign-in</a>
+  <a href="market" class="left">Market</a>
+  <a href="Contact-us" class="right">Contact-us</a>
+  <input type="text" placeholder="Search..">
+</div>
+
+ 
+
+
 <p>Do you want to add a product? <a href="addProductTest">Add product</a></p>
-<p>Here is our <a href="market">market</a></p>
-</body>
+
+
+
+
 </html>
+
