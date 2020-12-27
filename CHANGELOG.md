@@ -20,6 +20,27 @@
 
 ---
 
+[El Majdoubi Ismail](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou) Change log :
+
+- [#16](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/issues/16) Push to the cloud
+    * AWS/docker account
+    * AWS bucket, elastic IP
+    * [Gitlab CI and variable setup](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/settings/ci_cd)
+    * [some mistakes](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/commit/258acbdcac3d01333a9026b9c9db343c05672af2)
+    * [!13](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/merge_requests/13) Terraform configuration
+
+
+- [#30](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/issues/30) front-end CSS sign up sign in
+
+- [#38](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/issues/38) logo
+
+- [#36](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/issues/36) Market place product search bar
+    * [!48](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/merge_requests/48/diffs) back
+    * [!54](https://gaufre.informatique.univ-paris-diderot.fr/elmajdou/poca-2020/merge_requests/54/diffs) front
+
+
+---
+
 * [#43](https://gaufre.informatique.univ-paris-diderot.fr/michelbl/poca-2020/issues/30) Allow registration of new users
 * [#27](https://gaufre.informatique.univ-paris-diderot.fr/michelbl/poca-2020/issues/27) Deploy the software on the AWS cloud
 * [#21](https://gaufre.informatique.univ-paris-diderot.fr/michelbl/poca-2020/issues/21) Publish to Docker Hub (poca/poca-2020)
