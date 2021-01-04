@@ -1,6 +1,6 @@
 package poca
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import akka.http.scaladsl.server.Directives.{complete, concat, formFieldMap, get, getFromResource, parameters, path, post}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
@@ -8,6 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
+mport scala.concurrent.duration._
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -59,50 +60,50 @@ class Routes(users: Users, products : Products, categories : Categories) extends
 
     def isEmpty(x: String) : Boolean = { x == null || x.trim.isEmpty}
 
-    def login(fields: Map[String, String]): Future[HttpResponse] = {
+    def login(fields: Map[String, String]): Future[(HttpResponse,String)] = {
         logger.info("I got a request for login.")
         
         (fields.get("username"),fields.get("password")) match {
             case (Some(username),Some(password)) => {
                 if(isEmpty(username)){
                     Future(
-                        HttpResponse(
-                            StatusCodes.OK,
+                        (HttpResponse(
+                            StatusCodes.NotFound,
                             entity=s"Field 'username' not found.",
-                        )
+                        ),"")
                     )
                 }else if(isEmpty(password)){
                     Future(
-                        HttpResponse(
-                            StatusCodes.OK,
+                        (HttpResponse(
+                            StatusCodes.NotFound,
                             entity=s"Field 'password' not found.",
-                        )
+                        ),"")
                     )
                 } else {
                     val userSigninFuture: Future[Option[User]] = users.getUserByUsername(username=username)
                     userSigninFuture.flatMap(userSignin => {
                         if(userSignin.isEmpty){
                             Future(
-                                HttpResponse(
-                                    StatusCodes.OK,
+                                (HttpResponse(
+                                    StatusCodes.NotFound,
                                     entity=s"Wrong 'username' or password",
-                                )
+                                ),"")
                             )
                         } else {
                             val User(uid,uname,upass,umail,"")=userSignin.getOrElse(Nil)
                             if(BCrypt.checkpw(password,upass)){
                                 Future(
-                                    HttpResponse(
+                                    (HttpResponse(
                                         StatusCodes.OK,
                                         entity=s"Welcome back '$username' your password is '$password', your id is '$uid' and your mail is '$umail'",
-                                    )
+                                    ),username)
                                 )
                             } else {
                                 Future(
-                                    HttpResponse(
-                                        StatusCodes.OK,
+                                    (HttpResponse(
+                                        StatusCodes.NotFound,
                                         entity=s"Wrong username or 'password'",
-                                    )
+                                    ),"")
                                 )
                             }
                         }
@@ -111,10 +112,10 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             }
             case _ => {
                 Future(
-                    HttpResponse(
+                    (HttpResponse(
                         StatusCodes.BadRequest,
                         entity="Field 'username' or 'password' not found."
-                    )
+                    ),"")
                 )
             }
         }
@@ -283,7 +284,17 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             },
             path("login") {
                 (post & formFieldMap) { fields =>
-                    complete(login(fields))
+                    val fres = login(fields)
+                    val res= Await.result(fres,10.seconds)
+                    val httpres = fres.map(_._1)
+                    if(res._1.status == StatusCodes.OK){
+                        logger.info("Logging in " + res._2)
+                    }
+                    mySetSession(MyScalaSession(res._2)) {
+                        setNewCsrfToken(checkHeader) { ctx =>
+                            ctx.complete(httpres)
+                        }
+                    }
                 }
             },
             path("signin") {
@@ -322,19 +333,6 @@ class Routes(users: Users, products : Products, categories : Categories) extends
             path("profile") {
                 get {
                     complete(getProfile)
-                }
-            },
-            path("do_login") {
-                post {
-                    entity(as[String]) { body =>
-                        logger.info(s"Logging in $body")
-
-                        mySetSession(MyScalaSession(body)) {
-                            setNewCsrfToken(checkHeader) { ctx =>
-                                ctx.complete("ok")
-                            }
-                        }
-                    }
                 }
             },
             path("current_login") {
