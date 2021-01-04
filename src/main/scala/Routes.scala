@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import TwirlMarshaller._
 import org.mindrot.jbcrypt.BCrypt
 import play.twirl.api.HtmlFormat
-mport scala.concurrent.duration._
+import scala.concurrent.duration._
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
