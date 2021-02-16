@@ -1,0 +1,32 @@
+@(categories : Seq[poca.Category])
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css" />
+    <title>Amazoon</title>
+</head>
+
+    <h1>Add product</h1>
+
+    <p>Here you can add a product (TEST).</p>
+
+    <form action=/addProduct method="post">
+        <label for="productname">Product name:</label><br>
+        <input type="text" name="productname"><br>
+        <label for="productdescription">Product description:</label><br>
+        <input type="text" name="productdescription"><br>
+        <label for="productprice">Product price:</label><br>
+        <input type="number" min = "0.00" step="any" name="productprice"><br>
+        <label for="productcategory">Product category:</label><br>
+        <select name="productcategory" id="productcategory">
+            <option>None</option>
+            @for(c <- categories){
+            <option>@c.categoryName</option>
+            }
+        </select>
+        <input type="submit">
+    </form>
+
+</html>

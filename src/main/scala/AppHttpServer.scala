@@ -10,7 +10,7 @@ import com.typesafe.scalalogging.LazyLogging
 import ch.qos.logback.classic.{Level, Logger}
 import org.slf4j.LoggerFactory
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
-
+import scala.util.{Success, Failure}
 
 object AppHttpServer extends LazyLogging {
     val rootLogger: Logger = LoggerFactory.getLogger("com").asInstanceOf[Logger]
@@ -35,18 +35,21 @@ object AppHttpServer extends LazyLogging {
         MyDatabase.initialize(dbConfig)
     }
 
-    def main(args: Array[String]): Unit = {
+def main(args: Array[String]): Unit = {
         implicit val actorsSystem = ActorSystem(guardianBehavior=Behaviors.empty, name="my-system")
         implicit val actorsExecutionContext = actorsSystem.executionContext
+
+        import actorsSystem.dispatchers
 
         initDatabase
         val db = MyDatabase.db
         new RunMigrations(db)()
-
+        
         var users = new Users()
         var products = new Products()
-        val routes = new Routes(users, products)
-
+        var categories = new Categories()
+        val routes = new Routes(users, products,categories)
+        
         val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bind(routes.routes)
 
         val serverStartedFuture = bindingFuture.map(binding => {
@@ -64,3 +67,4 @@ object AppHttpServer extends LazyLogging {
         Await.ready(waitOnFuture, Duration.Inf)
     }
 }
+

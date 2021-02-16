@@ -4,20 +4,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css" />
     <title>Amazoon</title>
 </head>
 
-<h1>Sign-in</h1>
+<div class="navbar">
+  <a href="hello" class="right">Back-Home</a>
+  <a href="Product-Card" class="right">Product-Card</a>
+  <a href="market" class="left">Market</a>
+  <a href="Contact-us" class="right">Contact-us</a>
+  
+</div>
 
-<p>Here you can sign-in to our marvelous web application.</p>
+<div class="imgcontainer">
+  <img src="logo" alt="logo" class="logo">
+</div> 
 
-<form action="/login" method="post">
-    <label for="username">Username:</label><br>
-    <input type="text" name="username"><br>
-    <label for="password">Password</label><br>
-    <input type="password" name = "password"><br>
-    <input type="submit">
+
+
+<div class="container">
+  <form action="/login" method="post">
+    <h1>Sign-in</h1>
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" required>
+
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" required>
+
+      <button type="submit">Login</button>
+      <p><a href="current_login">current user</a></p>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+
+    <p><span style="float: right; margin-top: 10px">Don't have an account yet? <a href="signup">Sign-up</a></span></p>
+  </form> 
+  <form action="/do_logout" method="post">
+    <button type="submit">log out</button>
 </form>
-
-<p>Don't have an account yet? <a href="signup">Sign-up</a></p>
-</html>
+</div>

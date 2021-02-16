@@ -1,18 +1,48 @@
-@(products: Seq[poca.Product])
+@(products: Seq[poca.Product], cat : Seq[poca.Category], selectedcat : String)
 
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css" />
     <title>Amazoon</title>
 </head>
 
+<div class="navbar">
+  <a href="hello" class="right">Back-Home</a>
+  <a href="Product-Card" class="right">Product-Card</a>
+  <a href="signin" class="left">Sign-in</a>
+  <a href="Contact-us" class="right">Contact-us</a>
+  
+</div>
+
+
 <h1>Here is the list of our products.</h1>
 
-<ul>
+    <form action="/market" method="post">
+        <input type="text" placeholder="Product Name" name="userInput">
+        <label for="SelectCategory"> Choose a category :</label>
+        <select name="SelectCategory" id="SelectCategory">
+            <option>All</option>
+            @for(c <- cat){
+                @if( c.categoryName == selectedcat){
+                    <option selected>@c.categoryName</option>
+                }else{
+                    <option>@c.categoryName</option>
+                }
+            }
+        </select>
+        <label for="sortByPrice">Sort by price :</label>
+        <select name="sortByPrice" id="sortByPrice">
+            <option></option>
+            <option>Lowest first</option>
+            <option>Highest first</option>
+        </select>
+        <button type="submit">Choose</button>
+    </form>
     @for(product <- products) {
-    <li>@product.productname</li>
+<li>Name : <a href="productdetails?pId=@product.productId"> @product.productname</a>, Price : @product.productprice € </li>
     }
-</ul>
+  
 
 </html>

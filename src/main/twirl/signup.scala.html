@@ -4,22 +4,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css" />
     <title>Amazoon</title>
 </head>
 
+<div class="navbar">
+  <a href="hello" class="right">Back-Home</a>
+  <a href="Product-Card" class="right">Product-Card</a>
+  <a href="market" class="left">Market</a>
+  <a href="Contact-us" class="right">Contact-us</a>
+  
+</div>
+
+<div class="imgcontainer">
+  <img src="logo" alt="logo" class="logo">
+</div>
+<div class="container">
+  <form action="/register" method="post">
     <h1>Sign-up</h1>
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" required>
 
-    <p>Here you can sign-up to our marvelous web application.</p>
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" required>
+      
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email" name="email" required>
 
-    <form action=/register method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" name="username"><br>
-        <label for="password">Password</label><br>
-        <input type="password" name = "password"><br>
-        <label for="email">Email : </label><br>
-        <input type="email" name="email"><br>
-        <input type="submit">
-    </form>
 
-    <p>Already have an account? <a href="signin">Sign-in</a></p>
-</html>
+      <button type="submit">Sign up</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+
+    <p><span style="float: right; margin-top: 10px">Already have an account? <a href="signin">Sign-in</a></span></p>
+  </form> 
+</div>
+
